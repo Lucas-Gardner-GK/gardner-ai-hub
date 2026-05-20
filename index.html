@@ -1,404 +1,44 @@
-<!DOCTYPE html>
-<html lang="nb">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gardner AI Automation — Hub</title>
-<style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  html, body {
-    background: #0f172a;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", sans-serif;
-    color: #fafaf9;
-    min-height: 100vh;
-    line-height: 1.5;
-  }
-  .container {
-    max-width: 1280px;
-    margin: 0 auto;
-    padding: 64px 56px 96px;
-  }
-  .hero {
-    border-bottom: 1px solid rgba(255,255,255,0.08);
-    padding-bottom: 48px;
-    margin-bottom: 48px;
-  }
-  .brand-row {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    margin-bottom: 32px;
-  }
-  .brand-dot {
-    width: 12px;
-    height: 12px;
-    background: #f97316;
-    border-radius: 50%;
-    box-shadow: 0 0 12px rgba(249,115,22,.6);
-  }
-  .brand-name {
-    font-size: 14px;
-    font-weight: 700;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: #fafaf9;
-  }
-  .brand-tag {
-    font-size: 12px;
-    color: #64748b;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    margin-left: auto;
-  }
-  h1 {
-    font-size: 64px;
-    font-weight: 800;
-    line-height: 1.02;
-    letter-spacing: -2px;
-    margin-bottom: 16px;
-  }
-  h1 .accent { color: #f97316; }
-  .hero-sub {
-    font-size: 20px;
-    color: #94a3b8;
-    max-width: 760px;
-    line-height: 1.5;
-  }
-  .stats {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 32px;
-    margin-top: 40px;
-    padding-top: 32px;
-    border-top: 1px solid rgba(255,255,255,0.06);
-  }
-  .stat-num {
-    font-size: 40px;
-    font-weight: 800;
-    color: #f97316;
-    line-height: 1;
-    letter-spacing: -1px;
-  }
-  .stat-label {
-    font-size: 13px;
-    color: #64748b;
-    margin-top: 8px;
-    letter-spacing: 0.5px;
-  }
-  .section-label {
-    font-size: 11px;
-    color: #64748b;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    font-weight: 700;
-    margin-bottom: 20px;
-  }
-  .section { margin-bottom: 56px; }
-  .featured {
-    background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-    border: 1px solid #f97316;
-    border-radius: 16px;
-    padding: 40px;
-    text-decoration: none;
-    color: inherit;
-    display: grid;
-    grid-template-columns: 1fr auto;
-    gap: 32px;
-    align-items: center;
-    transition: transform .2s, box-shadow .2s;
-    position: relative;
-    overflow: hidden;
-  }
-  .featured:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 12px 40px rgba(249,115,22,.18);
-  }
-  .featured::before {
-    content: "";
-    position: absolute;
-    top: 0; right: 0;
-    width: 200px;
-    height: 200px;
-    background: radial-gradient(circle, rgba(249,115,22,0.15), transparent 70%);
-    pointer-events: none;
-  }
-  .featured-tag {
-    display: inline-block;
-    font-size: 10px;
-    font-weight: 800;
-    letter-spacing: 3px;
-    padding: 4px 10px;
-    border-radius: 4px;
-    background: #f97316;
-    color: white;
-    margin-bottom: 16px;
-    text-transform: uppercase;
-  }
-  .featured h2 {
-    font-size: 32px;
-    font-weight: 700;
-    line-height: 1.15;
-    letter-spacing: -0.5px;
-    margin-bottom: 10px;
-  }
-  .featured-desc {
-    font-size: 16px;
-    color: #94a3b8;
-    line-height: 1.5;
-    max-width: 580px;
-  }
-  .featured-arrow {
-    font-size: 36px;
-    color: #f97316;
-    font-weight: 300;
-  }
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 16px;
-  }
-  .card {
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-radius: 12px;
-    padding: 28px;
-    text-decoration: none;
-    color: inherit;
-    transition: all .2s;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    min-height: 200px;
-    position: relative;
-  }
-  .card:hover {
-    background: rgba(255,255,255,0.05);
-    border-color: rgba(249,115,22,0.4);
-    transform: translateY(-2px);
-  }
-  .card-icon {
-    width: 36px;
-    height: 36px;
-    background: rgba(249,115,22,0.12);
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #f97316;
-    font-size: 18px;
-    font-weight: 800;
-    margin-bottom: 8px;
-  }
-  .card-title {
-    font-size: 19px;
-    font-weight: 700;
-    color: #fafaf9;
-    letter-spacing: -0.3px;
-    line-height: 1.2;
-  }
-  .card-desc {
-    font-size: 14px;
-    color: #94a3b8;
-    line-height: 1.5;
-    flex: 1;
-  }
-  .card-meta {
-    font-size: 11px;
-    color: #475569;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    margin-top: 8px;
-  }
-  .card-arrow {
-    position: absolute;
-    top: 28px;
-    right: 28px;
-    color: #475569;
-    font-size: 18px;
-    transition: color .2s, transform .2s;
-  }
-  .card:hover .card-arrow { color: #f97316; transform: translateX(2px); }
-  .live-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-  }
-  .live-card {
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(255,255,255,0.08);
-    border-left: 3px solid #10b981;
-    border-radius: 10px;
-    padding: 22px 26px;
-    text-decoration: none;
-    color: inherit;
-    transition: all .2s;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 20px;
-  }
-  .live-card:hover {
-    background: rgba(255,255,255,0.05);
-    border-color: rgba(16,185,129,0.4);
-    border-left-color: #10b981;
-  }
-  .live-pulse {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 10px;
-    color: #10b981;
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    font-weight: 700;
-    margin-bottom: 6px;
-  }
-  .live-pulse::before {
-    content: "";
-    width: 6px;
-    height: 6px;
-    background: #10b981;
-    border-radius: 50%;
-    box-shadow: 0 0 8px #10b981;
-    animation: pulse 1.5s infinite;
-  }
-  @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.4; }
-  }
-  .live-title {
-    font-size: 17px;
-    font-weight: 700;
-    color: #fafaf9;
-    line-height: 1.3;
-  }
-  .live-sub {
-    font-size: 13px;
-    color: #64748b;
-    margin-top: 4px;
-    font-family: ui-monospace, monospace;
-  }
-  footer {
-    margin-top: 64px;
-    padding-top: 32px;
-    border-top: 1px solid rgba(255,255,255,0.06);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 13px;
-    color: #475569;
-  }
-  footer a { color: #94a3b8; text-decoration: none; }
-  footer a:hover { color: #f97316; }
-  @media (max-width: 900px) {
-    .container { padding: 40px 24px; }
-    h1 { font-size: 40px; }
-    .stats { grid-template-columns: repeat(2, 1fr); gap: 20px; }
-    .grid { grid-template-columns: 1fr; }
-    .live-grid { grid-template-columns: 1fr; }
-    .featured { grid-template-columns: 1fr; }
-    .featured-arrow { display: none; }
-    footer { flex-direction: column; gap: 12px; align-items: flex-start; }
-  }
-</style>
-</head>
-<body>
-<div class="container">
 
-  <div class="hero">
-    <div class="brand-row">
-      <div class="brand-dot"></div>
-      <div class="brand-name">Gardner AI Automation</div>
-      <div class="brand-tag">Hub · Stavanger</div>
-    </div>
-    <h1>Alt jeg har bygget,<br>på <span class="accent">ett sted</span>.</h1>
-    <p class="hero-sub">Presentasjon, forretningsplan, strategiske visualiseringer og live AI-systemer — samlet for rask tilgang.</p>
-    <div class="stats">
-      <div>
-        <div class="stat-num">4</div>
-        <div class="stat-label">Fungerende AI-systemer</div>
-      </div>
-      <div>
-        <div class="stat-num">17</div>
-        <div class="stat-label">Dager fra null til agent</div>
-      </div>
-      <div>
-        <div class="stat-num">8</div>
-        <div class="stat-label">Noder i crypto-agenten</div>
-      </div>
-      <div>
-        <div class="stat-num">∞</div>
-        <div class="stat-label">Hvor langt dette går</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="section">
-    <div class="section-label">Til møtet</div>
-    <a class="featured" href="Presentations/Ole_Andre_Presentasjon/Lucas_AI_Reisen.html">
-      <div>
-        <div class="featured-tag">Hovedpresentasjon</div>
-        <h2>Fra null til AI-agent på 15 dager</h2>
-        <p class="featured-desc">14 slides — reisen, systemene, markedet, og hvor det går videre. Klar for Ole Andre-møtet.</p>
-      </div>
-      <div class="featured-arrow">→</div>
-    </a>
-  </div>
-
-  <div class="section">
-    <div class="section-label">Strategiske dokumenter</div>
-    <div class="grid">
-      <a class="card" href="Presentations/AI_Forretningsplan/AI_Agent_Byggeplan.html">
-        <div class="card-icon">→</div>
-        <div class="card-title">Byggeplan &amp; faser</div>
-        <div class="card-desc">Hva som bygges når. Månedlig plan med faser fra demo til portefølje.</div>
-        <div class="card-meta">Forretningsplan</div>
-        <div class="card-arrow">↗</div>
-      </a>
-      <a class="card" href="Presentations/AI_Forretningsplan/To_Veier.html">
-        <div class="card-icon">‖</div>
-        <div class="card-title">To veier — visuell sammenligning</div>
-        <div class="card-desc">AI-agenter &amp; MCP vs. n8n-repetisjon. Hvor tiden faktisk bygger varig kompetanse.</div>
-        <div class="card-meta">Strategisk visualisering</div>
-        <div class="card-arrow">↗</div>
-      </a>
-      <a class="card" href="Presentations/MCP_Servers_Business_Future/MCP_Servers_Presentation.html">
-        <div class="card-icon">◆</div>
-        <div class="card-title">MCP for bedrifter</div>
-        <div class="card-desc">Eldre presentasjon om hva MCP er og hvorfor det vil endre programvare-økonomien.</div>
-        <div class="card-meta">Bakgrunnsdokument</div>
-        <div class="card-arrow">↗</div>
-      </a>
-    </div>
-  </div>
-
-  <div class="section">
-    <div class="section-label">Live systemer &amp; verktøy</div>
-    <div class="live-grid">
-      <a class="live-card" href="https://app.n8n.cloud/" target="_blank">
-        <div>
-          <div class="live-pulse">Live</div>
-          <div class="live-title">n8n-arbeidsflater</div>
-          <div class="live-sub">app.n8n.cloud — logg inn for å se workflows</div>
-        </div>
-        <div style="color:#475569; font-size: 22px;">↗</div>
-      </a>
-      <a class="live-card" href="https://lucasgardner.app.n8n.cloud/form/d19130a9-c9d5-4e49-bca0-cccf470da2a5" target="_blank">
-        <div>
-          <div class="live-pulse">Live</div>
-          <div class="live-title">Contact Form (publikt)</div>
-          <div class="live-sub">Demo-skjema for kunder</div>
-        </div>
-        <div style="color:#475569; font-size: 22px;">↗</div>
-      </a>
-    </div>
-  </div>
-
-  <footer>
-    <div>Lucas Gardner · Stavanger · <a href="mailto:gardner.ai.automation@gmail.com">gardner.ai.automation@gmail.com</a></div>
-    <div>Oppdatert mai 2026</div>
-  </footer>
-
-</div>
-</body>
-</html>
+GARDNER AI AUTOMATION
+HUB · STAVANGER
+Alt jeg har bygget, på ett sted.
+Presentasjon, forretningsplan, strategiske visualiseringer og live AI-systemer — samlet for rask tilgang.
+4
+Fungerende AI-systemer
+17
+Dager fra null til agent
+8
+Noder i crypto-agenten
+∞
+Hvor langt dette går
+TIL MØTET
+HOVEDPRESENTASJON
+Fra null til AI-agent på 15 dager
+14 slides — reisen, systemene, markedet, og hvor det går videre. Klar for Ole Andre-møtet.
+STRATEGISKE DOKUMENTER
+→
+Byggeplan & faser
+Hva som bygges når. Månedlig plan med faser fra demo til portefølje.
+FORRETNINGSPLAN
+↗
+‖
+To veier — visuell sammenligning
+AI-agenter & MCP vs. n8n-repetisjon. Hvor tiden faktisk bygger varig kompetanse.
+STRATEGISK VISUALISERING
+↗
+◆
+MCP for bedrifter
+Eldre presentasjon om hva MCP er og hvorfor det vil endre programvare-økonomien.
+BAKGRUNNSDOKUMENT
+↗
+LIVE SYSTEMER & VERKTØY
+LIVE
+n8n-arbeidsflater
+app.n8n.cloud — logg inn for å se workflows
+↗
+LIVE
+Contact Form (publikt)
+Demo-skjema for kunder
+↗
+Lucas Gardner · Stavanger · gardner.ai.automation@gmail.com
+Oppdatert mai 2026
