@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>To veier — visuell sammenligning</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    background: #fafaf9;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", sans-serif;
+    color: #0f172a;
+    min-height: 100vh;
+    line-height: 1.5;
+  }
+  .container {
+    max-width: 1340px;
+    margin: 0 auto;
+    padding: 72px 60px 100px;
+  }
+
+  /* Header */
+  .label {
+    font-size: 12px;
+    color: #94a3b8;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 18px;
+  }
+  h1 {
+    font-size: 56px;
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -1.5px;
+    margin-bottom: 16px;
+  }
+  h1 .accent { color: #f97316; }
+  .subtitle {
+    font-size: 19px;
+    color: #64748b;
+    max-width: 760px;
+    line-height: 1.5;
+  }
+
+  /* Top summary */
+  .summary {
+    margin-top: 56px;
+    background: white;
+    border-radius: 16px;
+    padding: 36px 40px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 3px rgba(0,0,0,.03);
+  }
+  .summary-title {
+    font-size: 13px;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-weight: 600;
+    margin-bottom: 24px;
+  }
+  .summary-row {
+    display: grid;
+    grid-template-columns: 200px 1fr 110px;
+    gap: 24px;
+    align-items: center;
+    margin-bottom: 18px;
+  }
+  .summary-row:last-child { margin-bottom: 0; }
+  .summary-name {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .pill {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    text-transform: uppercase;
+  }
+  .pill.a { background: #f97316; color: white; }
+  .pill.b { background: transparent; color: #94a3b8; border: 1px solid #cbd5e1; }
+  .summary-name .name-text {
+    font-size: 18px;
+    font-weight: 700;
+    color: #0f172a;
+  }
+  .summary-row.b .name-text { color: #475569; font-weight: 600; }
+  .big-bar {
+    height: 32px;
+    background: #f1f5f9;
+    border-radius: 16px;
+    position: relative;
+    overflow: hidden;
+  }
+  .big-bar-fill {
+    position: absolute;
+    top: 0; left: 0; bottom: 0;
+    border-radius: 16px;
+    animation: grow 1.1s cubic-bezier(.2,.8,.2,1) forwards;
+  }
+  .big-bar-fill.a {
+    background: linear-gradient(90deg, #f97316, #fb923c);
+    --target: 88%;
+  }
+  .big-bar-fill.b {
+    background: linear-gradient(90deg, #94a3b8, #cbd5e1);
+    --target: 25%;
+  }
+  @keyframes grow {
+    from { width: 0; }
+    to { width: var(--target); }
+  }
+  .big-score {
+    font-size: 32px;
+    font-weight: 800;
+    text-align: right;
+    letter-spacing: -1px;
+  }
+  .big-score.a { color: #f97316; }
+  .big-score.b { color: #94a3b8; }
+  .big-score .small {
+    font-size: 16px;
+    font-weight: 600;
+    color: #94a3b8;
+  }
+
+  /* Comparison grid */
+  .grid {
+    display: grid;
+    grid-template-columns: 240px 1fr 1fr;
+    gap: 0;
+    margin-top: 48px;
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 3px rgba(0,0,0,.03);
+  }
+
+  .col-header {
+    padding: 24px 28px;
+    border-bottom: 2px solid #e2e8f0;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #94a3b8;
+  }
+  .col-header.a {
+    color: #f97316;
+    background: #fffbf5;
+  }
+  .col-header.b {
+    color: #64748b;
+    background: #fafaf9;
+  }
+  .col-header .col-tag {
+    display: inline-block;
+    font-size: 10px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    margin-right: 10px;
+    font-weight: 800;
+    letter-spacing: 2px;
+  }
+  .col-header.a .col-tag { background: #f97316; color: white; }
+  .col-header.b .col-tag { background: transparent; color: #94a3b8; border: 1px solid #cbd5e1; }
+
+  .row-dim {
+    padding: 26px 0 26px 28px;
+    border-bottom: 1px solid #f1f5f9;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .row-dim:last-of-type { border-bottom: none; }
+  .row-dim .dim-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 4px;
+    letter-spacing: -0.2px;
+  }
+  .row-dim .dim-sub {
+    font-size: 12px;
+    color: #94a3b8;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+
+  .cell {
+    padding: 22px 28px;
+    border-bottom: 1px solid #f1f5f9;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 10px;
+  }
+  .cell:nth-last-of-type(-n+2) { border-bottom: none; }
+  .cell.a {
+    background: #fffbf5;
+  }
+  .cell.b {
+    background: white;
+  }
+
+  .score-line {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .mini-bar {
+    flex: 1;
+    height: 12px;
+    background: #f1f5f9;
+    border-radius: 6px;
+    overflow: hidden;
+    position: relative;
+  }
+  .mini-bar-fill {
+    height: 100%;
+    border-radius: 6px;
+    animation: grow 1.0s cubic-bezier(.2,.8,.2,1) forwards;
+  }
+  .mini-bar-fill.a { background: #f97316; }
+  .mini-bar-fill.b { background: #94a3b8; }
+  .score-num {
+    font-size: 22px;
+    font-weight: 800;
+    min-width: 56px;
+    text-align: right;
+    letter-spacing: -0.5px;
+  }
+  .score-num.a { color: #f97316; }
+  .score-num.b { color: #94a3b8; }
+  .score-num .denom {
+    font-size: 13px;
+    color: #cbd5e1;
+    font-weight: 600;
+  }
+  .cell-tag {
+    font-size: 14px;
+    font-weight: 500;
+    color: #334155;
+    line-height: 1.4;
+  }
+  .cell.b .cell-tag { color: #64748b; }
+
+  /* Footer note */
+  .footer {
+    margin-top: 56px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+  .footer-cell {
+    padding: 28px 30px;
+    border-radius: 12px;
+    font-size: 15px;
+    line-height: 1.55;
+  }
+  .footer-cell.a {
+    background: #f97316;
+    color: white;
+    font-weight: 500;
+  }
+  .footer-cell.b {
+    background: #f1f5f9;
+    color: #64748b;
+  }
+  .footer-label {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    opacity: 0.9;
+  }
+  .footer-cell.a .footer-label { color: #ffedd5; }
+
+  /* Responsive */
+  @media (max-width: 980px) {
+    .container { padding: 40px 24px; }
+    h1 { font-size: 38px; }
+    .summary-row { grid-template-columns: 1fr; gap: 8px; }
+    .grid { grid-template-columns: 1fr; }
+    .row-dim { padding: 16px 18px 4px; border-bottom: none; }
+    .cell { padding: 12px 18px 20px; border-bottom: 1px solid #f1f5f9; }
+    .footer { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="label">Strategisk visualisering · Mai 2026</div>
+  <h1>To veier inn i <span class="accent">AI-bygging</span>.</h1>
+  <p class="subtitle">Begge bruker n8n. Begge bruker Claude. Forskjellen er hvor tiden bygger opp varig kompetanse — og hvor markedet faktisk betaler.</p>
+
+  <!-- TOP SUMMARY -->
+  <div class="summary">
+    <div class="summary-title">Total verdivurdering — seks dimensjoner</div>
+
+    <div class="summary-row a">
+      <div class="summary-name">
+        <div class="pill a">Vei A</div>
+        <div class="name-text">AI-agenter &amp; MCP</div>
+      </div>
+      <div class="big-bar">
+        <div class="big-bar-fill a"></div>
+      </div>
+      <div class="big-score a">88<span class="small">/100</span></div>
+    </div>
+
+    <div class="summary-row b">
+      <div class="summary-name">
+        <div class="pill b">Vei B</div>
+        <div class="name-text">n8n-repetisjon</div>
+      </div>
+      <div class="big-bar">
+        <div class="big-bar-fill b"></div>
+      </div>
+      <div class="big-score b">25<span class="small">/100</span></div>
+    </div>
+  </div>
+
+  <!-- COMPARISON GRID -->
+  <div class="grid">
+
+    <!-- Column headers -->
+    <div class="col-header"></div>
+    <div class="col-header a"><span class="col-tag">Vei A</span>AI-agenter &amp; MCP</div>
+    <div class="col-header b"><span class="col-tag">Vei B</span>n8n-repetisjon</div>
+
+    <!-- Row 1 -->
+    <div class="row-dim">
+      <div class="dim-name">Læringsverdi</div>
+      <div class="dim-sub">Bygger opp eller står stille</div>
+    </div>
+    <div class="cell a">
+      <div class="score-line">
+        <div class="mini-bar"><div class="mini-bar-fill a" style="--target: 90%;"></div></div>
+        <div class="score-num a">9<span class="denom">/10</span></div>
+      </div>
+      <div class="cell-tag">Arkitektur, LLM-design, systemtenkning</div>
+    </div>
+    <div class="cell b">
+      <div class="score-line">
+        <div class="mini-bar"><div class="mini-bar-fill b" style="--target: 30%;"></div></div>
+        <div class="score-num b">3<span class="denom">/10</span></div>
+      </div>
+      <div class="cell-tag">Det du allerede kan, gjentatt</div>
+    </div>
+
+    <!-- Row 2 -->
+    <div class="row-dim">
+      <div class="dim-name">Knapphet</div>
+      <div class="dim-sub">Hvor få andre kan dette</div>
+    </div>
+    <div class="cell a">
+      <div class="score-line">
+        <div class="mini-bar"><div class="mini-bar-fill a" style="--target: 90%;"></div></div>
+        <div class="score-num a">9<span class="denom">/10</span></div>
+      </div>
+      <div class="cell-tag">Få i Norge med ekte forståelse</div>
+    </div>
+    <div class="cell b">
+      <div class="score-line">
+        <div class="mini-bar"><div class="mini-bar-fill b" style="--target: 20%;"></div></div>
+        <div class="score-num b">2<span class="denom">/10</span></div>
+      </div>
+      <div class="cell-tag">Tusenvis — også 14-åringer på Fiverr</div>
+    </div>
+
+    <!-- Row 3 -->
+    <div class="row-dim">
+      <div class="dim-name">Ticket-størrelse</div>
+      <div class="dim-sub">Hva kunden faktisk betaler</div>
+    </div>
+    <div class="cell a">
+      <div class="score-line">
+        <div class="mini-bar"><div class="mini-bar-fill a" style="--target: 85%;"></div></div>
+        <div class="score-num a">8<span class="denom">/10</span></div>
+      </div>
+      <div class="cell-tag">Premium + retainer for autonomt system</div>
+    </div>
+    <div class="cell b">
+      <div class="score-line">
+        <div class="mini-bar"><div class="mini-bar-fill b" style="--target: 30%;"></div></div>
+        <div class="score-num b">3<span class="denom">/10</span></div>
+      </div>
+      <div class="cell-tag">Engangsoppsett, lav pris, commodity</div>
+    </div>
+
+    <!-- Row 4 -->
+    <div class="row-dim">
+      <div class="dim-name">Holdbarhet mot AI</div>
+      <div class="dim-sub">Vil Claude erstatte deg om 2 år?</div>
+    </div>
+    <div class="cell a">
+      <div class="score-line">
+        <div class="mini-bar"><div class="mini-bar-fill a" style="--target: 90%;"></div></div>
+        <div class="score-num a">9<span class="denom">/10</span></div>
+      </div>
+      <div class="cell-tag">Krever menneskelig vurdering og design</div>
+    </div>
+    <div class="cell b">
+      <div class="score-line">
+        <div class="mini-bar"><div class="mini-bar-fill b" style="--target: 20%;"></div></div>
+        <div class="score-num b">2<span class="denom">/10</span></div>
+      </div>
+      <div class="cell-tag">Claude bygger flowen selv på sekunder</div>
+    </div>
+
+    <!-- Row 5 -->
+    <div class="row-dim">
+      <div class="dim-name">Inntjeningstak</div>
+      <div class="dim-sub">Hvor høyt kan dette gå</div>
+    </div>
+    <div class="cell a">
+      <div class="score-line">
+        <div class="mini-bar"><div class="mini-bar-fill a" style="--target: 90%;"></div></div>
+        <div class="score-num a">9<span class="denom">/10</span></div>
+      </div>
+      <div class="cell-tag">Konsulent → plattform → ansatte → exit</div>
+    </div>
+    <div class="cell b">
+      <div class="score-line">
+        <div class="mini-bar"><div class="mini-bar-fill b" style="--target: 30%;"></div></div>
+        <div class="score-num b">3<span class="denom">/10</span></div>
+      </div>
+      <div class="cell-tag">Solo-freelancer. Tak = dine egne timer</div>
+    </div>
+
+    <!-- Row 6 -->
+    <div class="row-dim">
+      <div class="dim-name">Posisjonering</div>
+      <div class="dim-sub">Slik markedet ser deg</div>
+    </div>
+    <div class="cell a">
+      <div class="score-line">
+        <div class="mini-bar"><div class="mini-bar-fill a" style="--target: 90%;"></div></div>
+        <div class="score-num a">9<span class="denom">/10</span></div>
+      </div>
+      <div class="cell-tag">«AI-arkitekten for norske bedrifter»</div>
+    </div>
+    <div class="cell b">
+      <div class="score-line">
+        <div class="mini-bar"><div class="mini-bar-fill b" style="--target: 20%;"></div></div>
+        <div class="score-num b">2<span class="denom">/10</span></div>
+      </div>
+      <div class="cell-tag">«n8n-fyren» — én av mange, lett å bytte</div>
+    </div>
+
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <div class="footer-cell a">
+      <div class="footer-label">Hva tiden bygger</div>
+      Hver time legger seg oppå forrige. Kunnskapen blir en mur som blir høyere — kompetanse som ikke kan kopieres med en YouTube-tutorial.
+    </div>
+    <div class="footer-cell b">
+      <div class="footer-label">Hva tiden bygger</div>
+      Hver time erstatter forrige. Du blir litt raskere på samme oppgave — men muren står stille mens AI-en din blir høyere.
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

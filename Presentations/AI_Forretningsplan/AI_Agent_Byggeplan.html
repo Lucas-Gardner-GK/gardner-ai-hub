@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI-agent byggeplan — fra første flyt til solgt produkt</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    line-height: 1.6;
+    color: #0f172a;
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+    background: #fafafa;
+  }
+  h1 {
+    font-size: 32px;
+    border-bottom: 3px solid #0d9488;
+    padding-bottom: 12px;
+    margin-bottom: 8px;
+  }
+  .subtitle { color: #64748b; font-size: 16px; margin-bottom: 40px; }
+  h2 {
+    font-size: 22px;
+    color: #0d9488;
+    margin-top: 48px;
+    border-left: 4px solid #0d9488;
+    padding-left: 12px;
+  }
+  h3 { font-size: 17px; margin-top: 28px; color: #1e293b; }
+  .phase {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 24px 28px;
+    margin: 20px 0;
+    box-shadow: 0 1px 2px rgba(0,0,0,.04);
+  }
+  .phase-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 12px;
+  }
+  .phase-badge {
+    background: #0d9488;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+  }
+  .phase-time {
+    color: #64748b;
+    font-size: 13px;
+    font-style: italic;
+  }
+  .step {
+    display: flex;
+    gap: 14px;
+    margin: 14px 0;
+    align-items: flex-start;
+  }
+  .step-num {
+    background: #f1f5f9;
+    color: #0d9488;
+    font-weight: 700;
+    min-width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    flex-shrink: 0;
+  }
+  .step-content { flex: 1; }
+  .step-content strong { color: #0f172a; }
+  ol.day-list { padding-left: 0; list-style: none; }
+  ol.day-list > li {
+    background: #f8fafc;
+    border-left: 3px solid #0d9488;
+    padding: 12px 18px;
+    margin: 10px 0;
+    border-radius: 4px;
+  }
+  .day-label { font-weight: 700; color: #0d9488; }
+  .checklist { list-style: none; padding-left: 0; }
+  .checklist li {
+    padding: 6px 0;
+    padding-left: 28px;
+    position: relative;
+  }
+  .checklist li::before {
+    content: "☐";
+    position: absolute;
+    left: 4px;
+    color: #0d9488;
+    font-size: 18px;
+  }
+  .why-box {
+    background: #fef3c7;
+    border-left: 4px solid #d97706;
+    padding: 14px 18px;
+    margin: 16px 0;
+    border-radius: 4px;
+  }
+  .why-box strong { color: #92400e; }
+  .warning-box {
+    background: #fee2e2;
+    border-left: 4px solid #dc2626;
+    padding: 14px 18px;
+    margin: 16px 0;
+    border-radius: 4px;
+  }
+  .tip-box {
+    background: #dbeafe;
+    border-left: 4px solid #2563eb;
+    padding: 14px 18px;
+    margin: 16px 0;
+    border-radius: 4px;
+  }
+  .node-list {
+    background: #f8fafc;
+    border-radius: 6px;
+    padding: 16px 20px;
+    margin: 16px 0;
+    font-family: ui-monospace, monospace;
+    font-size: 13px;
+    line-height: 1.9;
+  }
+  .node-list .num {
+    display: inline-block;
+    width: 24px;
+    color: #0d9488;
+    font-weight: 700;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    background: white;
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow: 0 1px 2px rgba(0,0,0,.04);
+  }
+  th { background: #0d9488; color: white; padding: 10px 14px; text-align: left; font-size: 14px; }
+  td { padding: 12px 14px; border-bottom: 1px solid #e2e8f0; font-size: 14px; vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  .toc {
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 20px 28px;
+    margin: 24px 0 40px;
+  }
+  .toc h3 { margin-top: 0; color: #0d9488; }
+  .toc ol { padding-left: 20px; }
+  .toc li { padding: 4px 0; }
+  .toc a { color: #0d9488; text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+  .level-table td:first-child { font-weight: 700; white-space: nowrap; }
+  .footer-note {
+    margin-top: 60px;
+    padding-top: 24px;
+    border-top: 1px solid #e2e8f0;
+    color: #64748b;
+    font-size: 13px;
+    font-style: italic;
+  }
+  @media print {
+    body { background: white; padding: 20px; }
+    .phase { box-shadow: none; page-break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<h1>AI-agent byggeplan</h1>
+<p class="subtitle">Fra første fakturerings-flyt til et produkt du kan selge. Praktisk veiledning, dag-for-dag.</p>
+
+<div class="toc">
+  <h3>Innhold</h3>
+  <ol>
+    <li><a href="#fase1">Fase 1: Bygg trygg v1 — uke 1</a></li>
+    <li><a href="#fase2">Fase 2: Test og bruk på deg selv — uke 2-4</a></li>
+    <li><a href="#fase3">Fase 3: Bygg ut — måned 2-3</a></li>
+    <li><a href="#fase4">Fase 4: Selg som tjeneste — måned 3-6</a></li>
+    <li><a href="#fase5">Fase 5: Watchdog — selvreparerende AI</a></li>
+    <li><a href="#mønsteret">Mønsteret: gjenbruk for andre automasjoner</a></li>
+    <li><a href="#sjekkliste">Endelig sjekkliste</a></li>
+  </ol>
+</div>
+
+<h2 id="fase1">Fase 1: Bygg trygg v1 — uke 1</h2>
+
+<div class="why-box">
+  <strong>Hvorfor denne fasen?</strong> Du bygger en månedlig fakturerings-flyt med "mennesket-i-løkka". AI-en forbereder alt, men du godkjenner før noe sendes. Lavest mulig risiko, og du lærer n8n samtidig.
+</div>
+
+<div class="phase">
+  <div class="phase-header">
+    <span class="phase-badge">DAG 1 — MANDAG</span>
+    <span class="phase-time">3-4 timer</span>
+  </div>
+  <h3>Sett opp grunnlaget</h3>
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-content"><strong>Opprett n8n-konto.</strong> Velg cloud-versjon (n8n.cloud) for å starte — du slipper å selvhoste. Gratis nivå holder for første test.</div>
+  </div>
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-content"><strong>Koble til CRM-et ditt.</strong> Hvis du ikke har et CRM enda, opprett en gratis HubSpot-konto. Legg inn deg selv som første test-kunde med fiktive data (navn, e-post, månedsbeløp).</div>
+  </div>
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-content"><strong>Koble til fakturasystem.</strong> Hvis du ikke har et, prøv Fiken eller Tripletex (begge har gratis prøveperiode). Lag en test-kunde der også.</div>
+  </div>
+  <div class="step">
+    <div class="step-num">4</div>
+    <div class="step-content"><strong>Koble til Gmail og Slack.</strong> Begge har innebygde nodes i n8n. Test at du kan sende en e-post og en Slack-melding med en enkel "Hello world"-flyt før du fortsetter.</div>
+  </div>
+</div>
+
+<div class="phase">
+  <div class="phase-header">
+    <span class="phase-badge">DAG 2 — TIRSDAG</span>
+    <span class="phase-time">4-5 timer</span>
+  </div>
+  <h3>Bygg selve flyten</h3>
+  <p>Du skal bygge denne flyten i n8n, node for node:</p>
+
+  <div class="node-list">
+    <div><span class="num">1.</span>Schedule Trigger (1. i måneden, 08:00)</div>
+    <div><span class="num">2.</span>Hent aktive kunder fra CRM</div>
+    <div><span class="num">3.</span>Filter (status = aktiv OG ikke pauset)</div>
+    <div><span class="num">4.</span>Split In Batches (loop per kunde)</div>
+    <div><span class="num">5.</span>Opprett fakturakladd i fakturasystemet</div>
+    <div><span class="num">6.</span>Send Slack-melding med kladd + Ja/Nei-knapper</div>
+    <div><span class="num">7.</span>Wait (vent på godkjenning)</div>
+    <div><span class="num">8.</span>Hvis godkjent: send e-post + marker faktura sendt + oppdater CRM</div>
+    <div><span class="num">9.</span>Sluttsammendrag til Slack</div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-content"><strong>Bygg én og én node.</strong> Start med Schedule Trigger. Bytt midlertidig til "Manual Trigger" mens du tester, så du kan kjøre når du vil.</div>
+  </div>
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-content"><strong>Test etter hver node.</strong> n8n viser hva som kommer ut av hver node. Sørg for at det ser riktig ut før du går videre.</div>
+  </div>
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-content"><strong>Bruk fast e-post-mal, ikke AI ennå.</strong> Skriv én standard-mal med variabler som <code>{{kundenavn}}</code> og <code>{{beløp}}</code>. Claude legges til senere.</div>
+  </div>
+</div>
+
+<div class="phase">
+  <div class="phase-header">
+    <span class="phase-badge">DAG 3 — ONSDAG</span>
+    <span class="phase-time">2-3 timer</span>
+  </div>
+  <h3>Test, fiks, test igjen</h3>
+  <ul class="checklist">
+    <li>Kjør flyten manuelt med deg selv som eneste kunde</li>
+    <li>Sjekk at Slack-meldingen kommer riktig og at knappene virker</li>
+    <li>Godkjenn, og se at e-posten faktisk kommer (til din egen e-post)</li>
+    <li>Sjekk at fakturaen er markert som sendt i fakturasystemet</li>
+    <li>Sjekk at CRM-et er oppdatert</li>
+    <li>Test også "Stopp"-scenariet: trykk Nei og se at flyten stopper trygt</li>
+  </ul>
+</div>
+
+<div class="phase">
+  <div class="phase-header">
+    <span class="phase-badge">DAG 4 — TORSDAG</span>
+    <span class="phase-time">2 timer</span>
+  </div>
+  <h3>Kjør med ekte data</h3>
+  <p>Hvis du har en eller flere ekte kunder, legg dem inn i CRM-et og kjør flyten på dem. Du sitter og overvåker hele veien. Når Slack-meldingen kommer, vurder hver faktura nøye før du trykker Godkjenn.</p>
+  <div class="tip-box">
+    <strong>Tips:</strong> Hold n8n-vinduet åpent på siden mens du jobber den dagen. Da kan du følge med på hva flyten gjør i sanntid.
+  </div>
+</div>
+
+<div class="phase">
+  <div class="phase-header">
+    <span class="phase-badge">DAG 5 — FREDAG</span>
+    <span class="phase-time">1-2 timer</span>
+  </div>
+  <h3>Dokumenter det du lærte</h3>
+  <p>Lag et A4-ark som beskriver flyten din kort. Inkluder:</p>
+  <ul class="checklist">
+    <li>Et skjermbilde av flyten</li>
+    <li>Hvor lang tid det tok å bygge</li>
+    <li>Hva som gikk overraskende lett</li>
+    <li>Hva som var vanskelig</li>
+    <li>Hvor mye tid du sparer per måned</li>
+  </ul>
+  <div class="why-box">
+    <strong>Dette blir salgsmaterialet ditt.</strong> Du skal vise det til hver potensielle kunde. "Jeg fakturerer mine egne kunder gjennom akkurat denne typen flyt. Her er hvordan." Det er gull.
+  </div>
+</div>
+
+<h2 id="fase2">Fase 2: Test og bruk på deg selv — uke 2-4</h2>
+
+<div class="phase">
+  <h3>Mål for denne fasen</h3>
+  <p>Kjør flyten <strong>to fulle måneder uten store overraskelser</strong> før du legger til noe nytt. Hvis det dukker opp problemer, fiks dem manuelt og noter dem ned.</p>
+
+  <h3>Hva du gjør hver dag</h3>
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-content"><strong>Den 1. i hver måned:</strong> Vær tilgjengelig på Slack når flyten kjører. Godkjenn fakturaene én etter én.</div>
+  </div>
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-content"><strong>Resten av måneden:</strong> Logg eventuelle problemer i en enkel notatfil. "Kunde X hadde feil adresse." "Visma var nede klokken 08:00." Osv.</div>
+  </div>
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-content"><strong>Vis det fram:</strong> Begynn å nevne flyten i hvert salgsmøte og hver samtale. Du trenger ikke å selge den ennå — bare snakk om at du bruker den.</div>
+  </div>
+
+  <div class="warning-box">
+    <strong>Ikke bygg nye funksjoner ennå.</strong> Det er fristende, men du har ikke nok data om hva som faktisk er problemet. Hold deg til v1 i to måneder.
+  </div>
+</div>
+
+<h2 id="fase3">Fase 3: Bygg ut — måned 2-3</h2>
+
+<div class="phase">
+  <h3>Når v1 har kjørt to måneder uten store problemer:</h3>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-content"><strong>Legg til Claude i e-post-noden.</strong> I stedet for fast mal, lar du Claude skrive en personlig e-post basert på kundens historikk. Lav risiko fordi godkjenningssteget fortsatt er der.</div>
+  </div>
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-content"><strong>Auto-godkjenn enkle tilfeller.</strong> Hvis en kunde har samme beløp tre måneder på rad og har betalt i tide, hopper flyten over godkjenningssteget for dem. Spar tid på det som er åpenbart greit.</div>
+  </div>
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-content"><strong>Legg til purring-flyten.</strong> En separat flyt som kjører ukentlig og sjekker hvem som ikke har betalt. Send vennlig påminnelse etter 7 dager, strengere etter 14.</div>
+  </div>
+</div>
+
+<h2 id="fase4">Fase 4: Selg som tjeneste — måned 3-6</h2>
+
+<div class="phase">
+  <h3>Tre måter å tjene penger på flyten</h3>
+
+  <table>
+    <tr>
+      <th>Tilnærming</th>
+      <th>Tidspunkt</th>
+      <th>Prising</th>
+    </tr>
+    <tr>
+      <td><strong>Demo og fortelling</strong></td>
+      <td>Umiddelbart når v1 funker</td>
+      <td>Gratis — bygger troverdighet for andre tjenester</td>
+    </tr>
+    <tr>
+      <td><strong>Bygge for kunde</strong></td>
+      <td>Etter 3 måneder stabil drift</td>
+      <td>10 000-25 000 kr oppsett + 1 500-3 000 kr/mnd vedlikehold</td>
+    </tr>
+    <tr>
+      <td><strong>Pakket produkt</strong></td>
+      <td>Etter 6 måneder, når du har levert flere</td>
+      <td>Standardisert pris for et nisje-segment</td>
+    </tr>
+  </table>
+
+  <h3>Hvordan presentere det i salgsmøter</h3>
+  <ul class="checklist">
+    <li>Vis flyten på skjermen, ikke bare snakk om den</li>
+    <li>Si hvor mye tid du sparer per måned (konkret tall)</li>
+    <li>Vis en faktisk e-post som flyten har sendt</li>
+    <li>Si: "Jeg kan bygge det samme for deg på X timer for Y kr"</li>
+    <li>Vær tydelig på vedlikeholds-abonnementet — det er der den langsiktige inntekten ligger</li>
+  </ul>
+
+  <div class="tip-box">
+    <strong>Strategisk tips:</strong> Ikke prøv å selge "et produkt" først. Selg som tjeneste, gjenta den 5-10 ganger, og produktet utkrystalliserer seg av seg selv. De som starter med produkt-tankegang bygger ofte feil produkt.
+  </div>
+</div>
+
+<h2 id="fase5">Fase 5: Watchdog — selvreparerende AI</h2>
+
+<div class="warning-box">
+  <strong>Bygg dette tidligst etter 3 måneder med stabil v1.</strong> Du må ha sett ekte feil for å vite hva som er verdt å automatisere.
+</div>
+
+<div class="phase">
+  <h3>Hva Watchdog er</h3>
+  <p>En separat n8n-flyt som overvåker hovedflyten. Den triggres når noe går galt, eller den kjører fast hver time/dag og leter etter problemer. Den klassifiserer hver feil i ett av tre nivåer og handler deretter.</p>
+
+  <h3>De tre nivåene</h3>
+  <table class="level-table">
+    <tr>
+      <th>Nivå</th>
+      <th>Hva AI-en gjør</th>
+      <th>Eksempler</th>
+    </tr>
+    <tr>
+      <td>Nivå 1</td>
+      <td>Fikser selv, varsler etterpå</td>
+      <td>Prøver på nytt etter feil, trimmer mellomrom i e-poster, retter MVA-format</td>
+    </tr>
+    <tr>
+      <td>Nivå 2</td>
+      <td>Foreslår, spør deg om godkjenning</td>
+      <td>"Skal jeg pause kunde som ikke har betalt på 60 dager?" "Beløp 50% høyere enn vanlig — send eller vent?"</td>
+    </tr>
+    <tr>
+      <td>Nivå 3</td>
+      <td>Bare varsler, gjør ingenting</td>
+      <td>Refusjonsbegjæringer, store fakturaer over terskel, mistenkelig aktivitet</td>
+    </tr>
+  </table>
+
+  <h3>Strukturen i Watchdog (cirka 10-12 noder)</h3>
+  <div class="node-list">
+    <div><span class="num">1.</span>Trigger (feil fra hovedflyt ELLER cron-jobb)</div>
+    <div><span class="num">2.</span>Hent feilkontekst fra logg (via filsystem-MCP)</div>
+    <div><span class="num">3.</span>Hent kunde-data fra CRM</div>
+    <div><span class="num">4.</span>Hent faktura-status fra ERP</div>
+    <div><span class="num">5.</span>Claude: diagnostiser og klassifiser (les regelfilen)</div>
+    <div><span class="num">6.</span>Switch basert på nivå</div>
+    <div><span class="num">7a.</span>Nivå 1: utfør fiks via MCP</div>
+    <div><span class="num">7b.</span>Nivå 2: Slack-melding med Ja/Nei + Wait</div>
+    <div><span class="num">7c.</span>Nivå 3: detaljert varsel til deg</div>
+    <div><span class="num">8.</span>Skriv til logg-fil (via filsystem-MCP)</div>
+    <div><span class="num">9.</span>Sluttsammendrag</div>
+  </div>
+
+  <h3>Regelfilen</h3>
+  <p>En enkel tekstfil på Mac-en din (cirka 20-30 linjer) som Claude leser hver gang den diagnostiserer. Eksempel:</p>
+  <div class="node-list" style="font-size: 12px;">
+    NIVÅ 1 (auto-fiks):<br>
+    - Gmail timeout: prøv på nytt 3 ganger med 30 sek mellomrom<br>
+    - Visma 500-feil: prøv på nytt etter 5 min<br>
+    - Mellomrom i e-post: trim og prøv igjen<br>
+    <br>
+    NIVÅ 2 (spør først):<br>
+    - Beløp over 10 000 kr: alltid spør<br>
+    - Beløpsavvik over 30% fra forrige måned: spør<br>
+    - Kunde har ikke betalt på over 30 dager: foreslå handling<br>
+    <br>
+    NIVÅ 3 (bare varsle):<br>
+    - Refusjonsbegjæring fra kunde<br>
+    - Mer enn 3 feil i samme time<br>
+    - Faktura over 50 000 kr feiler
+  </div>
+
+  <h3>Sikkerhetsnett</h3>
+  <ul class="checklist">
+    <li>Aldri auto-utfør handling som påvirker mer enn 3 kunder samtidig</li>
+    <li>Aldri auto-utfør pengetransaksjoner over en fast terskel</li>
+    <li>Logg ALT — selv vellykkede Nivå 1-fikser</li>
+    <li>Send deg en ukentlig oppsummering av alt Watchdog gjorde</li>
+  </ul>
+
+  <h3>Selge Watchdog også</h3>
+  <p>Watchdog er ofte enklere å selge enn fakturerings-flyten. Når du har levert en automasjon til en kunde (som AI e-post-responder) og den har gått stabilt i noen måneder, kan du komme tilbake og tilby "AI-vaktmester" som passer på automasjonen. 3 000-5 000 kr/mnd ekstra per kunde. Den ekstra inntekten gjør forretningen mye mer levedyktig.</p>
+</div>
+
+<h2 id="mønsteret">Mønsteret: gjenbruk for andre automasjoner</h2>
+
+<div class="phase">
+  <p>Det fineste med å lære fakturerings-flyten er at <strong>strukturen gjentas i nesten alle AI-automasjoner</strong>. Skjelettet er det samme:</p>
+
+  <div class="node-list" style="font-size: 14px; text-align: center; padding: 24px;">
+    Trigger → Hent kontekst → Loop → AI-vurdering → Handling → Logg → Sammendrag
+  </div>
+
+  <p>Bytt ut innholdet, ikke strukturen:</p>
+
+  <table>
+    <tr>
+      <th>Automasjon</th>
+      <th>Trigger</th>
+      <th>AI-vurdering</th>
+      <th>Handling</th>
+    </tr>
+    <tr>
+      <td><strong>AI e-post-responder</strong></td>
+      <td>Ny e-post mottatt</td>
+      <td>Utkast svar med kundekontekst</td>
+      <td>Send som kladd eller direkte</td>
+    </tr>
+    <tr>
+      <td><strong>Lead-håndtering</strong></td>
+      <td>Nytt kontaktskjema</td>
+      <td>Klassifiser varm/kald + foreslå neste steg</td>
+      <td>Tagg i CRM + send velkomstmail</td>
+    </tr>
+    <tr>
+      <td><strong>Kundeoppfølging</strong></td>
+      <td>1 uke etter levering</td>
+      <td>Skriv personlig oppfølging</td>
+      <td>Send e-post</td>
+    </tr>
+    <tr>
+      <td><strong>Ukentlig rapport</strong></td>
+      <td>Mandag morgen</td>
+      <td>Oppsummer trender fra data</td>
+      <td>Send rapport til kunde</td>
+    </tr>
+  </table>
+
+  <div class="tip-box">
+    <strong>Salgs-vinkel:</strong> "Jeg har et mønster som funker. Vi tilpasser det til ditt behov." Mye mer overbevisende enn "jeg bygger noe helt nytt fra bunnen."
+  </div>
+</div>
+
+<h2 id="sjekkliste">Endelig sjekkliste</h2>
+
+<div class="phase">
+  <h3>Denne uken</h3>
+  <ul class="checklist">
+    <li>Opprett n8n-konto</li>
+    <li>Koble til CRM, fakturasystem, Gmail, Slack</li>
+    <li>Bygg flyten med 9 noder</li>
+    <li>Test med deg selv som eneste kunde</li>
+    <li>Skriv 1-sides oppsummering</li>
+  </ul>
+
+  <h3>Neste 2 måneder</h3>
+  <ul class="checklist">
+    <li>Kjør flyten den 1. hver måned</li>
+    <li>Logg problemer som dukker opp</li>
+    <li>Nevn flyten i hvert salgsmøte</li>
+    <li>IKKE bygg nye funksjoner</li>
+  </ul>
+
+  <h3>Måned 3 og videre</h3>
+  <ul class="checklist">
+    <li>Legg til Claude i e-post-noden</li>
+    <li>Bygg purring-flyt</li>
+    <li>Selg første oppsett til en kunde</li>
+  </ul>
+
+  <h3>Måned 6+</h3>
+  <ul class="checklist">
+    <li>Bygg Watchdog</li>
+    <li>Selg vedlikeholds-abonnement til eksisterende kunder</li>
+    <li>Vurder om du kan standardisere som produkt</li>
+  </ul>
+</div>
+
+<p class="footer-note">
+  Dokumentet kan skrives ut (Cmd+P) eller deles som det er. Det er laget for å være praktisk — kryss av etter hvert som du gjør ting, og kom tilbake når du er klar for neste fase.
+</p>
+
+</body>
+</html>

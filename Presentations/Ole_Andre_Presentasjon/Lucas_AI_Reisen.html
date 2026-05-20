@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lucas Gardner — AI-reisen min</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    background: #0f172a;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", sans-serif;
+    color: #0f172a;
+  }
+  #stage {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .slide {
+    width: 100%;
+    height: 100%;
+    display: none;
+    flex-direction: column;
+    padding: 80px 100px;
+    background: #fafaf9;
+    position: relative;
+    overflow: hidden;
+  }
+  .slide.active { display: flex; animation: fadeIn .4s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+  .slide.dark { background: #0f172a; color: #fafaf9; }
+  .slide.accent { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: #fafaf9; }
+
+  .slide-num {
+    position: absolute;
+    bottom: 30px;
+    right: 40px;
+    font-size: 12px;
+    color: #94a3b8;
+    font-weight: 500;
+    letter-spacing: 1px;
+  }
+  .slide-label {
+    position: absolute;
+    top: 40px;
+    left: 100px;
+    font-size: 12px;
+    color: #94a3b8;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+  .slide.dark .slide-label, .slide.accent .slide-label { color: #f97316; }
+  .slide.dark .slide-num, .slide.accent .slide-num { color: #475569; }
+
+  h1.title {
+    font-size: 72px;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -2px;
+    margin-bottom: 24px;
+  }
+  h1.title .accent { color: #f97316; }
+  h2 {
+    font-size: 56px;
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -1px;
+    margin-bottom: 32px;
+  }
+  h2 .accent { color: #f97316; }
+  h3 {
+    font-size: 28px;
+    font-weight: 600;
+    line-height: 1.2;
+    margin-bottom: 16px;
+  }
+  .subtitle {
+    font-size: 22px;
+    color: #64748b;
+    margin-bottom: 40px;
+    max-width: 800px;
+    line-height: 1.4;
+  }
+  .slide.dark .subtitle, .slide.accent .subtitle { color: #cbd5e1; }
+  .lead {
+    font-size: 24px;
+    line-height: 1.5;
+    color: #334155;
+    max-width: 900px;
+  }
+  .slide.dark .lead, .slide.accent .lead { color: #cbd5e1; }
+
+  .stat {
+    display: inline-block;
+    margin-right: 60px;
+    margin-bottom: 30px;
+  }
+  .stat-num {
+    font-size: 72px;
+    font-weight: 800;
+    color: #f97316;
+    line-height: 1;
+  }
+  .stat-label {
+    font-size: 16px;
+    color: #64748b;
+    margin-top: 8px;
+  }
+  .slide.dark .stat-label, .slide.accent .stat-label { color: #cbd5e1; }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    margin-top: 30px;
+  }
+  .three-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 30px;
+    margin-top: 30px;
+  }
+  .card {
+    background: white;
+    border-radius: 12px;
+    padding: 32px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 3px rgba(0,0,0,.04);
+  }
+  .slide.dark .card, .slide.accent .card {
+    background: rgba(255,255,255,.05);
+    border: 1px solid rgba(255,255,255,.1);
+    color: #fafaf9;
+  }
+  .card-num {
+    color: #f97316;
+    font-size: 32px;
+    font-weight: 800;
+    margin-bottom: 12px;
+  }
+  .card-title {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+  .card-text {
+    font-size: 15px;
+    color: #64748b;
+    line-height: 1.5;
+  }
+  .slide.dark .card-text, .slide.accent .card-text { color: #cbd5e1; }
+
+  .flow {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 40px 0;
+    flex-wrap: wrap;
+  }
+  .flow-step {
+    background: white;
+    border: 2px solid #e2e8f0;
+    padding: 16px 20px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    min-width: 140px;
+    text-align: center;
+  }
+  .flow-step.highlight {
+    background: #f97316;
+    color: white;
+    border-color: #f97316;
+  }
+  .flow-arrow {
+    color: #94a3b8;
+    font-size: 24px;
+    font-weight: 700;
+  }
+  .slide.dark .flow-step, .slide.accent .flow-step {
+    background: rgba(255,255,255,.08);
+    border-color: rgba(255,255,255,.15);
+    color: #fafaf9;
+  }
+
+  .timeline {
+    margin-top: 40px;
+    position: relative;
+  }
+  .timeline-item {
+    display: flex;
+    gap: 30px;
+    margin-bottom: 24px;
+    align-items: flex-start;
+  }
+  .timeline-date {
+    background: #0f172a;
+    color: white;
+    padding: 8px 14px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 700;
+    min-width: 140px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+  .timeline-content {
+    font-size: 18px;
+    line-height: 1.5;
+    color: #334155;
+  }
+
+  ul.checks {
+    list-style: none;
+    padding: 0;
+    margin-top: 20px;
+  }
+  ul.checks li {
+    padding: 12px 0;
+    padding-left: 40px;
+    position: relative;
+    font-size: 22px;
+    color: #334155;
+  }
+  ul.checks li::before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    top: 12px;
+    color: #f97316;
+    font-size: 24px;
+    font-weight: 800;
+  }
+  .slide.dark ul.checks li, .slide.accent ul.checks li { color: #cbd5e1; }
+
+  .quote {
+    font-size: 36px;
+    font-weight: 600;
+    line-height: 1.3;
+    font-style: italic;
+    margin: 40px 0;
+    max-width: 900px;
+    color: #0f172a;
+  }
+  .slide.dark .quote, .slide.accent .quote { color: #fafaf9; }
+  .quote::before {
+    content: "";
+    display: block;
+    width: 60px;
+    height: 4px;
+    background: #f97316;
+    margin-bottom: 24px;
+  }
+  .attribution {
+    font-size: 16px;
+    color: #64748b;
+    font-style: normal;
+    margin-top: 16px;
+  }
+
+  .live-link {
+    display: inline-block;
+    background: #f97316;
+    color: white;
+    padding: 14px 24px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 16px;
+    margin-top: 20px;
+  }
+  .live-link:hover { background: #ea580c; }
+
+  .signature {
+    margin-top: auto;
+    padding-top: 40px;
+    border-top: 1px solid #e2e8f0;
+    font-size: 14px;
+    color: #64748b;
+  }
+  .slide.dark .signature, .slide.accent .signature {
+    border-top-color: rgba(255,255,255,.1);
+    color: #94a3b8;
+  }
+
+  /* Controls */
+  #controls {
+    position: fixed; bottom: 0; left: 0; right: 0; height: 56px;
+    background: linear-gradient(to top, rgba(0,0,0,.85), rgba(0,0,0,.4) 70%, transparent);
+    display: flex; align-items: center; justify-content: center; gap: 16px;
+    padding: 0 20px; z-index: 10; transition: opacity .3s;
+    color: white;
+  }
+  #controls.hidden { opacity: 0; pointer-events: none; }
+  button {
+    background: rgba(255,255,255,.1);
+    color: #fff;
+    border: 1px solid rgba(255,255,255,.15);
+    padding: 8px 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+  }
+  button:hover { background: rgba(255,255,255,.2); }
+  #counter {
+    font-variant-numeric: tabular-nums;
+    font-size: 14px;
+    opacity: .85;
+    min-width: 50px;
+    text-align: center;
+  }
+  .nav-zone {
+    position: fixed;
+    top: 0;
+    bottom: 56px;
+    width: 25%;
+    cursor: pointer;
+    z-index: 5;
+  }
+  .nav-zone.left { left: 0; }
+  .nav-zone.right { right: 0; }
+
+  .big-num {
+    font-size: 180px;
+    font-weight: 900;
+    color: #f97316;
+    line-height: 1;
+    margin-bottom: 20px;
+    letter-spacing: -8px;
+  }
+  .ascii-flow {
+    font-family: ui-monospace, monospace;
+    font-size: 16px;
+    line-height: 1.8;
+    color: #334155;
+    background: #f1f5f9;
+    padding: 24px 32px;
+    border-radius: 8px;
+    margin-top: 20px;
+  }
+</style>
+</head>
+<body>
+
+<div id="stage">
+
+  <!-- SLIDE 1: TITLE -->
+  <div class="slide active accent">
+    <div class="slide-label">Lucas Gardner · Mai 2026</div>
+    <div style="margin-top: auto; margin-bottom: auto;">
+      <h1 class="title">Fra null til AI-agent<br>på <span class="accent">15 dager</span>.</h1>
+      <p class="subtitle">Min reise inn i AI, MCP og automatisering — og hvorfor jeg tror dette er den største muligheten norske bedrifter har sett på 20 år.</p>
+    </div>
+    <div class="signature">Lucas Gardner · Stavanger · gardner.ai.automation@gmail.com</div>
+    <div class="slide-num">01</div>
+  </div>
+
+  <!-- SLIDE 2: HVOR JEG STARTET -->
+  <div class="slide">
+    <div class="slide-label">Utgangspunkt</div>
+    <h2>2. mai 2026.<br>Jeg visste <span class="accent">ingenting</span>.</h2>
+    <ul class="checks" style="margin-top: 30px;">
+      <li>Hadde aldri brukt n8n</li>
+      <li>Visste ikke hva MCP, API eller webhook var</li>
+      <li>Hadde aldri bygget en automatisering</li>
+      <li>Hadde bare en magefølelse om at AI kom til å endre alt</li>
+    </ul>
+    <div class="slide-num">02</div>
+  </div>
+
+  <!-- SLIDE 3: 15 DAGER SENERE -->
+  <div class="slide accent">
+    <div class="slide-label">15 dager senere</div>
+    <h2>I dag.</h2>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 40px;">
+      <div>
+        <div class="stat">
+          <div class="stat-num">4</div>
+          <div class="stat-label">Fungerende AI-systemer<br>bygget fra bunnen</div>
+        </div>
+      </div>
+      <div>
+        <div class="stat">
+          <div class="stat-num">15+</div>
+          <div class="stat-label">Tekniske konsepter<br>jeg kan forklare</div>
+        </div>
+      </div>
+      <div>
+        <div class="stat">
+          <div class="stat-num">1</div>
+          <div class="stat-label">Live kontaktskjema<br>klar for kunder</div>
+        </div>
+      </div>
+      <div>
+        <div class="stat">
+          <div class="stat-num">∞</div>
+          <div class="stat-label">Ideer om hva som er<br>mulig herfra</div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-num">03</div>
+  </div>
+
+  <!-- SLIDE 4: TIDSLINJE -->
+  <div class="slide">
+    <div class="slide-label">Læringsreisen</div>
+    <h2>15 dager, dag for dag.</h2>
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-date">2.-3. mai</div>
+        <div class="timeline-content">Lærte n8n grunnleggende, webhooks, API, CRM, MCP, IF-noder. Forsto «legokloss»-modellen.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">4.-5. mai</div>
+        <div class="timeline-content">Bygget Contact Form Automation. Lærte mapping, e-post-integrasjon, iframe-embedding.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">7.-8. mai</div>
+        <div class="timeline-content">Bygget AI Email Responder med OpenAI + Gmail + Slack. Etablerte firma-e-post.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">9.-13. mai</div>
+        <div class="timeline-content">Dykket dypt i LLM-arkitektur (tokens, parameters, transformers, training vs inference).</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">14.-17. mai</div>
+        <div class="timeline-content">Forsto MCP, bygget filsystem-MCP mellom Claude Desktop og Mac. Studerte forretningsmuligheter.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">18.-19. mai</div>
+        <div class="timeline-content">Bygget en autonom crypto-morgenbrief-agent — tre datakilder, AI-sammendrag, levert til innboksen kl. 07:00.</div>
+      </div>
+    </div>
+    <div class="slide-num">04</div>
+  </div>
+
+  <!-- SLIDE 5: HVA JEG HAR BYGGET -->
+  <div class="slide">
+    <div class="slide-label">Hva jeg har bygget</div>
+    <h2>Fire konkrete systemer.</h2>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 30px;">
+      <div class="card">
+        <div class="card-num">01</div>
+        <div class="card-title">Contact Form Automation</div>
+        <div class="card-text">Kundene fyller ut skjema → jeg får e-post, kunden får automatisk bekreftelse. Klar til å selges som tjeneste.</div>
+      </div>
+      <div class="card">
+        <div class="card-num">02</div>
+        <div class="card-title">AI Email Responder</div>
+        <div class="card-text">Kunde sender mail → AI leser og svarer profesjonelt → Slack-varsel til meg med full kontekst.</div>
+      </div>
+      <div class="card">
+        <div class="card-num">03</div>
+        <div class="card-title">Filesystem MCP</div>
+        <div class="card-text">Claude Desktop snakker direkte med filer på Mac-en min. Skriver, leser, oppretter — autonomt.</div>
+      </div>
+      <div class="card">
+        <div class="card-num">04</div>
+        <div class="card-title">Crypto Morgenbrief-Agent</div>
+        <div class="card-text">Kjører hver morgen kl. 07:00. Henter priser, nyheter og sentiment fra tre kilder, lager et AI-sammendrag, sender det rett i innboksen.</div>
+      </div>
+    </div>
+    <div class="slide-num">05</div>
+  </div>
+
+  <!-- SLIDE 6: EMAIL RESPONDER FLOW -->
+  <div class="slide">
+    <div class="slide-label">Eksempel: AI Email Responder</div>
+    <h2>Slik fungerer det.</h2>
+    <div class="flow">
+      <div class="flow-step">Kunde sender e-post</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">Gmail Trigger</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step highlight">OpenAI leser & svarer</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">Send via Gmail</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">Slack-varsel</div>
+    </div>
+    <p class="lead" style="margin-top: 40px;">Bygget i n8n med 4 noder. Koster cirka 5 kr i måneden å drifte. Erstatter timer med manuelt svararbeid.</p>
+    <div class="slide-num">06</div>
+  </div>
+
+  <!-- SLIDE 7: CRYPTO MORGENBRIEF FLOW -->
+  <div class="slide">
+    <div class="slide-label">Eksempel: Crypto Morgenbrief-Agent</div>
+    <h2>Det nyeste systemet — <span class="accent">helt autonomt</span>.</h2>
+    <div class="flow">
+      <div class="flow-step">Cron 07:00</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">Henter fra 3 kilder</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">Kombiner JSON</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step highlight">Claude lager sammendrag</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">E-post + Slack</div>
+    </div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-top: 24px;">
+      <div style="background: #f1f5f9; padding: 18px 22px; border-radius: 8px;">
+        <div style="font-size: 12px; color: #94a3b8; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 6px; font-weight: 600;">Priser</div>
+        <div style="font-size: 18px; font-weight: 700; margin-bottom: 4px;">CoinGecko</div>
+        <div style="font-size: 14px; color: #64748b;">BTC, ETH, SOL — 24t-bevegelse</div>
+      </div>
+      <div style="background: #f1f5f9; padding: 18px 22px; border-radius: 8px;">
+        <div style="font-size: 12px; color: #94a3b8; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 6px; font-weight: 600;">Nyheter</div>
+        <div style="font-size: 18px; font-weight: 700; margin-bottom: 4px;">CryptoCompare</div>
+        <div style="font-size: 14px; color: #64748b;">Siste 24 timer, sortert på relevans</div>
+      </div>
+      <div style="background: #f1f5f9; padding: 18px 22px; border-radius: 8px;">
+        <div style="font-size: 12px; color: #94a3b8; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 6px; font-weight: 600;">Sentiment</div>
+        <div style="font-size: 18px; font-weight: 700; margin-bottom: 4px;">r/CryptoCurrency</div>
+        <div style="font-size: 14px; color: #64748b;">Topp-poster fra siste døgn</div>
+      </div>
+    </div>
+    <p class="lead" style="margin-top: 28px; font-size: 19px;">
+      Resultatet: et 250–300-ords sammendrag av krypto-markedet i innboksen <em>før jeg har drukket kaffen</em>. 8 noder, kjører helt autonomt, koster cirka 8 kr i måneden.
+    </p>
+    <div class="slide-num">07</div>
+  </div>
+
+  <!-- SLIDE 8: HVA JEG FORSTÅR NÅ -->
+  <div class="slide">
+    <div class="slide-label">Teknisk grunnlag</div>
+    <h2>Det jeg <span class="accent">forstår</span> nå.</h2>
+    <div class="two-col">
+      <div>
+        <h3 style="color: #f97316;">Hvordan AI fungerer</h3>
+        <p style="font-size: 16px; line-height: 1.6; color: #475569;">
+          Tokens, parameters, weights. Transformer-arkitekturen fra 2017. Training vs inference. Context windows. Hvorfor noen modeller koster mer (Ferrari vs Toyota).
+        </p>
+        <h3 style="color: #f97316; margin-top: 30px;">Hvordan AI tar handling</h3>
+        <p style="font-size: 16px; line-height: 1.6; color: #475569;">
+          Forskjellen mellom LLM (hjerne) og AI-agent (hjerne + armer). Tools, Memory, Planning. Hvor grensen mellom dem ligger.
+        </p>
+      </div>
+      <div>
+        <h3 style="color: #f97316;">Hvordan systemer snakker</h3>
+        <p style="font-size: 16px; line-height: 1.6; color: #475569;">
+          API-er som servitører. Webhooks som dørklokker. Mapping mellom noder. Hvordan data flyter gjennom en automatisering.
+        </p>
+        <h3 style="color: #f97316; margin-top: 30px;">Hvorfor MCP er fremtiden</h3>
+        <p style="font-size: 16px; line-height: 1.6; color: #475569;">
+          MCP er protokollen som lar AI snakke med hvilket som helst system. Det er hva HTTP var for internett. Den infrastrukturen bygges akkurat nå.
+        </p>
+      </div>
+    </div>
+    <div class="slide-num">08</div>
+  </div>
+
+  <!-- SLIDE 8: MARKEDET -->
+  <div class="slide dark">
+    <div class="slide-label">Markedet</div>
+    <h2>Tallene snakker tydelig.</h2>
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 40px; margin-top: 50px;">
+      <div>
+        <div class="stat-num" style="font-size: 64px;">8B → 50B$</div>
+        <div class="stat-label" style="font-size: 17px;">AI-agent-markedet vokser fra 8 mrd USD i 2026 til estimert 40–50 mrd USD innen 2030.</div>
+      </div>
+      <div>
+        <div class="stat-num" style="font-size: 64px;">25% → 50%</div>
+        <div class="stat-label" style="font-size: 17px;">Andelen bedrifter som bruker GenAI dobles innen 2027 — fra 25 % i dag.</div>
+      </div>
+      <div>
+        <div class="stat-num" style="font-size: 64px;">2026</div>
+        <div class="stat-label" style="font-size: 17px;">Året da norske bedrifter går fra «vi burde gjøre noe med AI» til «vi må».</div>
+      </div>
+    </div>
+    <p class="lead" style="margin-top: 60px; font-size: 22px;">Norge er bakerst i flokken — det er en mulighet, ikke et problem.</p>
+    <div class="slide-num">09</div>
+  </div>
+
+  <!-- SLIDE 10: VISJONEN -->
+  <div class="slide">
+    <div class="slide-label">Min visjon</div>
+    <h2>Hva jeg ser komme.</h2>
+    <p class="lead" style="margin-top: 20px; font-size: 24px;">
+      Innen <strong>5 år</strong> kommer hver norske bedrift med 10+ ansatte til å ha minst én AI-agent som gjør reelt arbeid for dem.
+    </p>
+    <p class="lead" style="margin-top: 30px; font-size: 22px; color: #64748b;">
+      Ikke en chatbot. Ikke et eksperiment. En AI-agent som leser e-post, fakturerer, oppdaterer CRM, sjekker compliance, eller overvåker drift — autonomt, hver dag.
+    </p>
+    <p class="lead" style="margin-top: 30px; font-size: 22px; color: #64748b;">
+      <strong style="color: #f97316;">Spørsmålet er ikke om det skjer. Spørsmålet er hvem som bygger det.</strong>
+    </p>
+    <div class="slide-num">10</div>
+  </div>
+
+  <!-- SLIDE 10: BITCOIN-MØNSTERET -->
+  <div class="slide accent">
+    <div class="slide-label">Mønsteret</div>
+    <h2>Samme mønster som <span class="accent">Bitcoin i 2010</span>.</h2>
+    <p class="lead" style="margin-top: 40px; max-width: 900px;">
+      De som så mønsteret tidlig forsto noe ingen andre forsto: at infrastrukturen var bygget, teknologien var moden nok, men markedet hadde ikke våknet ennå.
+    </p>
+    <p class="lead" style="margin-top: 24px; max-width: 900px;">
+      Det er nøyaktig der vi er med AI-agenter og MCP i dag. <strong style="color: #f97316;">Verktøyene finnes. De fleste vet ikke at de finnes.</strong>
+    </p>
+    <div class="slide-num">11</div>
+  </div>
+
+  <!-- SLIDE 12: HVOR JEG ER PÅ VEI -->
+  <div class="slide">
+    <div class="slide-label">Roadmap</div>
+    <h2>Hvor jeg er på vei.</h2>
+    <div class="three-col">
+      <div class="card">
+        <div class="card-num">Sommer 2026</div>
+        <div class="card-title">Første betalende kunder</div>
+        <div class="card-text">2-3 SMB-er i Stavanger som betaler for egendefinerte AI-flyter. Ikke pakkeprodukter — system bygget rundt én konkret oppgave de i dag gjør manuelt. Beviset på at modellen fungerer i norsk marked.</div>
+      </div>
+      <div class="card">
+        <div class="card-num">Høst 2026</div>
+        <div class="card-title">Velge spor</div>
+        <div class="card-text">Etter de første jobbene: gå dypt i én bransje (fintech, eiendom, regnskap) eller bredt i én systemtype. Beslutningen baseres på hva som faktisk solgte — ikke hva som hørtes riktig ut nå.</div>
+      </div>
+      <div class="card">
+        <div class="card-num">2027+</div>
+        <div class="card-title">Fra utfører til merke</div>
+        <div class="card-text">Portefølje, allianser, synlighet, ansettelser. Gardner Automation blir et navn, ikke en frilanser. AI-leverandøren norske bedrifter ringer først.</div>
+      </div>
+    </div>
+    <p class="lead" style="margin-top: 50px; font-size: 22px;">
+      Målet er ikke å være freelancer. Målet er å være <strong style="color: #f97316;">på toppen av AI-integrering i norske bedrifter</strong>.
+    </p>
+    <div class="slide-num">12</div>
+  </div>
+
+  <!-- SLIDE 12: TEMPOET -->
+  <div class="slide dark">
+    <div class="slide-label">15 dager versus 12 måneder</div>
+    <h2>Tempoet jeg holder.</h2>
+    <p class="lead" style="font-size: 24px; margin-top: 40px; max-width: 950px;">
+      På <strong style="color: #f97316;">15 dager</strong> har jeg gått fra null kunnskap til fire fungerende AI-systemer, dyp forståelse av LLM-arkitektur, og en MCP-server koblet direkte til min egen Mac.
+    </p>
+    <p class="lead" style="margin-top: 50px; font-size: 30px; max-width: 950px;">
+      Forestill deg hvor jeg er på <strong style="color: #f97316;">12 måneder</strong>.
+    </p>
+    <div class="slide-num">13</div>
+  </div>
+
+  <!-- SLIDE 14: TAKK -->
+  <div class="slide accent">
+    <div class="slide-label">Takk</div>
+    <div style="margin: auto 0;">
+      <h1 class="title" style="font-size: 60px;">Klar til å bygge<br>noe <span class="accent">stort</span>.</h1>
+      <p class="subtitle" style="font-size: 20px; margin-top: 30px;">
+        Lucas Gardner<br>
+        gardner.ai.automation@gmail.com<br>
+        Stavanger, Norge
+      </p>
+    </div>
+    <div class="signature">Live demo: lucasgardner.app.n8n.cloud</div>
+    <div class="slide-num">14</div>
+  </div>
+
+</div>
+
+<div class="nav-zone left" onclick="prev()"></div>
+<div class="nav-zone right" onclick="next()"></div>
+
+<div id="controls">
+  <button onclick="prev()">← Forrige</button>
+  <span id="counter">1 / 14</span>
+  <button onclick="next()">Neste →</button>
+  <button onclick="toggleFullscreen()">Fullskjerm (F)</button>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  let current = 0;
+  const counter = document.getElementById('counter');
+  const controls = document.getElementById('controls');
+  let hideTimer;
+
+  function show(i) {
+    current = Math.max(0, Math.min(total - 1, i));
+    slides.forEach((s, idx) => s.classList.toggle('active', idx === current));
+    counter.textContent = (current + 1) + ' / ' + total;
+  }
+  function next() { show(current + 1); }
+  function prev() { show(current - 1); }
+  function toggleFullscreen() {
+    if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+    else document.exitFullscreen();
+  }
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') { e.preventDefault(); next(); }
+    else if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); prev(); }
+    else if (e.key === 'Home') show(0);
+    else if (e.key === 'End') show(total - 1);
+    else if (e.key === 'f' || e.key === 'F') toggleFullscreen();
+  });
+  let touchStart = null;
+  document.addEventListener('touchstart', e => { touchStart = e.touches[0].clientX; });
+  document.addEventListener('touchend', e => {
+    if (touchStart === null) return;
+    const dx = e.changedTouches[0].clientX - touchStart;
+    if (Math.abs(dx) > 50) dx < 0 ? next() : prev();
+    touchStart = null;
+  });
+  function resetHideTimer() {
+    controls.classList.remove('hidden');
+    clearTimeout(hideTimer);
+    hideTimer = setTimeout(() => controls.classList.add('hidden'), 3000);
+  }
+  document.addEventListener('mousemove', resetHideTimer);
+  document.addEventListener('keydown', resetHideTimer);
+  resetHideTimer();
+</script>
+
+</body>
+</html>
