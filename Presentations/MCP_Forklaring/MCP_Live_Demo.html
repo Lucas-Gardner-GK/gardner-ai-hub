@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hvordan MCP fungerer — Lucas Gardner</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    background: #0f172a;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", sans-serif;
+    color: #fafaf9;
+  }
+  #stage {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .slide {
+    width: 100%;
+    height: 100%;
+    display: none;
+    flex-direction: column;
+    padding: 80px 100px;
+    background: #fafaf9;
+    color: #0f172a;
+    position: relative;
+    overflow: hidden;
+  }
+  .slide.active { display: flex; animation: fadeIn .4s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  .slide.dark { background: #0f172a; color: #fafaf9; }
+  .slide.accent { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: #fafaf9; }
+  .slide-num { position: absolute; bottom: 30px; right: 40px; font-size: 12px; color: #94a3b8; font-weight: 500; letter-spacing: 1px; }
+  .slide-label { position: absolute; top: 40px; left: 100px; font-size: 12px; color: #94a3b8; letter-spacing: 3px; text-transform: uppercase; font-weight: 600; }
+  .slide.dark .slide-label, .slide.accent .slide-label { color: #f97316; }
+  h1 { font-size: 72px; font-weight: 800; line-height: 1; letter-spacing: -2px; margin-bottom: 24px; }
+  h2 { font-size: 52px; font-weight: 700; line-height: 1.1; letter-spacing: -1px; margin-bottom: 32px; }
+  .accent-text { color: #f97316; }
+  .subtitle { font-size: 22px; color: #64748b; max-width: 800px; line-height: 1.5; }
+  .slide.dark .subtitle, .slide.accent .subtitle { color: #cbd5e1; }
+  .lead { font-size: 22px; line-height: 1.6; color: #334155; max-width: 900px; }
+  .slide.dark .lead, .slide.accent .lead { color: #cbd5e1; }
+  .box { background: #f1f5f9; border-radius: 12px; padding: 28px 36px; margin-top: 24px; font-size: 18px; line-height: 1.6; color: #334155; border-left: 4px solid #f97316; }
+  .slide.dark .box, .slide.accent .box { background: rgba(255,255,255,0.06); color: #cbd5e1; }
+  .flow-step { background: rgba(255,255,255,0.08); border: 2px solid #f97316; padding: 18px 24px; border-radius: 10px; font-size: 16px; font-weight: 700; text-align: center; min-width: 200px; color: #fafaf9; }
+  .flow-desc { color: #94a3b8; font-size: 16px; max-width: 500px; }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 32px; }
+  .card { background: white; border-radius: 12px; padding: 28px; border: 1px solid #e2e8f0; }
+  .slide.dark .card, .slide.accent .card { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1); }
+  .card-title { font-size: 18px; font-weight: 700; margin-bottom: 10px; color: #f97316; }
+  .card-text { font-size: 15px; color: #64748b; line-height: 1.6; }
+  .slide.dark .card-text, .slide.accent .card-text { color: #cbd5e1; }
+  .code-block { background: #1e293b; color: #e2e8f0; border-radius: 10px; padding: 24px 32px; font-family: ui-monospace, monospace; font-size: 14px; line-height: 1.8; margin-top: 24px; border: 1px solid rgba(255,255,255,0.1); }
+  .code-comment { color: #64748b; }
+  .code-key { color: #f97316; }
+  .code-val { color: #86efac; }
+  ul.checks { list-style: none; margin-top: 24px; }
+  ul.checks li { padding: 14px 0 14px 44px; position: relative; font-size: 20px; color: #334155; border-bottom: 1px solid #f1f5f9; }
+  .slide.dark ul.checks li, .slide.accent ul.checks li { color: #cbd5e1; border-bottom-color: rgba(255,255,255,0.06); }
+  ul.checks li::before { content: "✓"; position: absolute; left: 0; color: #f97316; font-size: 22px; font-weight: 800; }
+  .tag { display: inline-block; background: rgba(249,115,22,0.15); color: #f97316; padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 20px; }
+  .signature { margin-top: auto; padding-top: 32px; border-top: 1px solid rgba(255,255,255,0.08); font-size: 14px; color: #94a3b8; }
+  #controls { position: fixed; bottom: 0; left: 0; right: 0; height: 56px; background: linear-gradient(to top, rgba(0,0,0,.85), transparent); display: flex; align-items: center; justify-content: center; gap: 16px; z-index: 10; transition: opacity .3s; color: white; }
+  #controls.hidden { opacity: 0; pointer-events: none; }
+  button { background: rgba(255,255,255,.1); color: #fff; border: 1px solid rgba(255,255,255,.15); padding: 8px 14px; border-radius: 6px; cursor: pointer; font-size: 14px; }
+  button:hover { background: rgba(255,255,255,.2); }
+  #counter { font-size: 14px; opacity: .85; min-width: 50px; text-align: center; }
+  .nav-zone { position: fixed; top: 0; bottom: 56px; width: 25%; cursor: pointer; z-index: 5; }
+  .nav-zone.left { left: 0; }
+  .nav-zone.right { right: 0; }
+</style>
+</head>
+<body>
+<div id="stage">
+  <div class="slide active accent">
+    <div class="slide-label">Lucas Gardner · MCP Forklaring</div>
+    <div style="margin: auto 0;">
+      <div class="tag">Live demo</div>
+      <h1>Hvordan Claude<br>snakker med<br><span class="accent-text">Mac-en min.</span></h1>
+      <p class="subtitle" style="margin-top: 24px;">En enkel forklaring på hva MCP er, hvordan jeg har satt det opp, og hva det betyr i praksis.</p>
+    </div>
+    <div class="signature">Lucas Gardner · Stavanger · gardner.ai.automation@gmail.com</div>
+    <div class="slide-num">01</div>
+  </div>
+  <div class="slide">
+    <div class="slide-label">Utgangspunktet</div>
+    <h2>Normalt er AI<br><span class="accent-text">innestengt.</span></h2>
+    <p class="lead" style="margin-top: 16px;">Claude, ChatGPT og andre AI-er lever på internett. De kan snakke med deg — men de kan ikke røre noe på datamaskinen din. De kan ikke lese filene dine, skrive til dem, eller gjøre noe på egen hånd.</p>
+    <div class="box"><strong>Tenk på det sånn:</strong> AI er en ekstremt smart person som sitter bak et glassvindu. Du kan snakke med dem, men de kan ikke ta på noe i rommet ditt.</div>
+    <div class="slide-num">02</div>
+  </div>
+  <div class="slide dark">
+    <div class="slide-label">Hva er MCP?</div>
+    <h2>MCP er<br><span class="accent-text">døren i glasset.</span></h2>
+    <p class="lead" style="margin-top: 16px;">MCP — Model Context Protocol — er en protokoll laget av Anthropic (selskapet bak Claude) i 2024. Det er et felles språk som lar AI koble seg til verktøy, filer og systemer på utsiden.</p>
+    <div class="box" style="margin-top: 32px;"><strong>Tolk-analogien:</strong> Tenk på MCP som en tolk. Claude snakker AI-språk. Mac-en snakker maskin-språk. MCP oversetter mellom dem slik at de kan jobbe sammen.</div>
+    <div class="slide-num">03</div>
+  </div>
+  <div class="slide">
+    <div class="slide-label">Min oppsett</div>
+    <h2>Hva jeg faktisk<br>har <span class="accent-text">bygget.</span></h2>
+    <p class="lead" style="margin-top: 8px;">Jeg har koblet Claude Desktop direkte til hele filsystemet mitt via en MCP-server. Claude kan nå lese, skrive og opprette filer på Mac-en min.</p>
+    <div class="code-block">
+      <span class="code-comment">// Konfigurasjonsfilen som kobler Claude til Mac-en:</span><br>
+      <span class="code-comment">// ~/Library/Application Support/Claude/claude_desktop_config.json</span><br><br>
+      {<br>
+      &nbsp;&nbsp;<span class="code-key">"mcpServers"</span>: {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;<span class="code-key">"filesystem"</span>: {<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-key">"command"</span>: <span class="code-val">"npx"</span>,<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-key">"args"</span>: [<span class="code-val">"@modelcontextprotocol/server-filesystem"</span>, <span class="code-val">"/Users/lucasgardner"</span>]<br>
+      &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+      &nbsp;&nbsp;}<br>
+      }
+    </div>
+    <div class="slide-num">04</div>
+  </div>
+  <div class="slide accent">
+    <div class="slide-label">Slik fungerer det</div>
+    <h2>Steg for steg.</h2>
+    <div style="margin-top: 40px; display: flex; flex-direction: column; gap: 20px;">
+      <div style="display: flex; align-items: center; gap: 24px;"><div class="flow-step">1. Jeg skriver til Claude</div><div class="flow-desc">"Opprett en fil som heter test.txt og skriv Hei i den"</div></div>
+      <div style="display: flex; align-items: center; gap: 24px;"><div class="flow-step">2. Claude forstår</div><div class="flow-desc">Claude skjønner at dette krever tilgang til filsystemet</div></div>
+      <div style="display: flex; align-items: center; gap: 24px;"><div class="flow-step">3. MCP oversetter</div><div class="flow-desc">MCP-serveren sender kommandoen til Mac-en</div></div>
+      <div style="display: flex; align-items: center; gap: 24px;"><div class="flow-step">4. Filen opprettes</div><div class="flow-desc">test.txt dukker opp på Mac-en — uten at jeg rørte en knapp</div></div>
+    </div>
+    <div class="slide-num">05</div>
+  </div>
+  <div class="slide">
+    <div class="slide-label">I praksis</div>
+    <h2>Hva Claude kan gjøre<br>på <span class="accent-text">Mac-en min.</span></h2>
+    <ul class="checks" style="margin-top: 32px;">
+      <li>Lese alle filer og mapper under /Users/lucasgardner</li>
+      <li>Opprette nye filer og mapper</li>
+      <li>Skrive og redigere innhold i eksisterende filer</li>
+      <li>Søke etter filer på tvers av hele hjemmemappen</li>
+      <li>Oppdatere nettsiden min ved å endre kode direkte</li>
+    </ul>
+    <div class="slide-num">06</div>
+  </div>
+  <div class="slide dark">
+    <div class="slide-label">Live demo</div>
+    <h2>Se det skje<br><span class="accent-text">i sanntid.</span></h2>
+    <p class="lead" style="margin-top: 24px;">Åpne Claude Desktop. Skriv dette:</p>
+    <div class="code-block" style="font-size: 18px; margin-top: 20px;">"Opprett en fil på Mac-en min som heter<br>ole_andre_test.txt og skriv 'Hei fra AI' i den."</div>
+    <p class="lead" style="margin-top: 32px; font-size: 20px;">Åpne Finder og se filen dukke opp. Under 5 sekunder. <span style="color: #f97316;">Ingen kode. Ingen knapper. Bare tekst.</span></p>
+    <div class="slide-num">07</div>
+  </div>
+  <div class="slide accent">
+    <div class="slide-label">Hvorfor dette er viktig</div>
+    <h2>MCP er for AI<br>hva <span class="accent-text">HTTP var<br>for internett.</span></h2>
+    <p class="lead" style="margin-top: 32px;">HTTP var protokollen som lot alle nettsider snakke samme språk. Det skapte internett slik vi kjenner det. MCP gjør det samme for AI — det er standarden som lar AI koble seg til alle systemer.</p>
+    <p class="lead" style="margin-top: 24px; font-size: 20px; color: #f97316;">Den infrastrukturen bygges akkurat nå. De fleste vet ikke at den finnes.</p>
+    <div class="slide-num">08</div>
+  </div>
+  <div class="slide">
+    <div class="slide-label">Oppsummering</div>
+    <h2>Det du akkurat<br>har <span class="accent-text">sett.</span></h2>
+    <div class="two-col" style="margin-top: 32px;">
+      <div class="card"><div class="card-title">Hva MCP er</div><div class="card-text">En protokoll som lar Claude snakke direkte med filsystemer, databaser og verktøy. Laget av Anthropic i 2024.</div></div>
+      <div class="card"><div class="card-title">Hva jeg har gjort</div><div class="card-text">Koblet Claude Desktop til hele Mac-en min. Claude kan nå lese, skrive og opprette filer autonomt.</div></div>
+      <div class="card"><div class="card-title">Hva dette muliggjør</div><div class="card-text">AI som faktisk gjør arbeid — ikke bare snakker om det. Neste steg er å koble det mot bedriftssystemer og databaser.</div></div>
+      <div class="card"><div class="card-title">Hvor jeg er</div><div class="card-text">18 dager inn i AI-læring. Dette er én av fire systemer jeg har bygget fra bunnen — uten teknisk bakgrunn.</div></div>
+    </div>
+    <div class="slide-num">09</div>
+  </div>
+</div>
+<div class="nav-zone left" onclick="prev()"></div>
+<div class="nav-zone right" onclick="next()"></div>
+<div id="controls">
+  <button onclick="prev()">← Forrige</button>
+  <span id="counter">1 / 9</span>
+  <button onclick="next()">Neste →</button>
+  <button onclick="toggleFullscreen()">Fullskjerm (F)</button>
+</div>
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const total = slides.length;
+  let current = 0;
+  const counter = document.getElementById('counter');
+  const controls = document.getElementById('controls');
+  let hideTimer;
+  function show(i) { current = Math.max(0, Math.min(total-1,i)); slides.forEach((s,idx)=>s.classList.toggle('active',idx===current)); counter.textContent=(current+1)+' / '+total; }
+  function next() { show(current+1); }
+  function prev() { show(current-1); }
+  function toggleFullscreen() { if(!document.fullscreenElement)document.documentElement.requestFullscreen(); else document.exitFullscreen(); }
+  document.addEventListener('keydown',e=>{ if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();next();}else if(e.key==='ArrowLeft'){e.preventDefault();prev();}else if(e.key==='f'||e.key==='F')toggleFullscreen(); });
+  let touchStart=null;
+  document.addEventListener('touchstart',e=>{touchStart=e.touches[0].clientX;});
+  document.addEventListener('touchend',e=>{ if(touchStart===null)return; const dx=e.changedTouches[0].clientX-touchStart; if(Math.abs(dx)>50)dx<0?next():prev(); touchStart=null; });
+  function resetHide(){controls.classList.remove('hidden');clearTimeout(hideTimer);hideTimer=setTimeout(()=>controls.classList.add('hidden'),3000);}
+  document.addEventListener('mousemove',resetHide);
+  resetHide();
+</script>
+</body>
+</html>
