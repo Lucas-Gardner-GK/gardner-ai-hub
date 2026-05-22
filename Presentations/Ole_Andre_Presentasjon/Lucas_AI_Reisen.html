@@ -26,8 +26,15 @@
     padding: 80px 100px;
     background: #fafaf9;
     overflow: hidden;
+    visibility: hidden;
+    pointer-events: none;
   }
-  .slide.active { display: flex; animation: fadeIn .4s ease; }
+  .slide.active {
+    display: flex;
+    visibility: visible;
+    pointer-events: auto;
+    animation: fadeIn .4s ease;
+  }
   @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
   .slide.dark { background: #0f172a; color: #fafaf9; }
