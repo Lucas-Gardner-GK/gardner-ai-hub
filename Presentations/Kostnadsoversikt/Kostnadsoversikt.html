@@ -108,25 +108,28 @@
 
   <!-- SLIDE 4 -->
   <div class="slide dark">
-    <div class="slide-label">Regnestykket — Crypto Morgenbrief</div>
+    <div class="slide-label">Crypto Morgenbrief</div>
     <h2>~1 kr/mnd.<br><span class="accent">Nesten gratis.</span></h2>
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 20px;">
-      <div>
-        <p class="lead" style="color: #cbd5e1; margin-bottom: 24px;">Agenten henter data fra tre helt gratis kilder og sender alt til GPT-4o-mini for analyse.</p>
+      <div style="display: flex; flex-direction: column; gap: 16px;">
+        <p class="lead" style="color: #cbd5e1;">Agenten gjør tre ting hver morgen kl. 07:00:</p>
         <div class="formula-box">
-          <div class="formula-label">Gratis datakilder</div>
-          <div class="formula-line">• CoinGecko API — 0 kr<br>• CoinDesk RSS — 0 kr<br>• Fear &amp; Greed Index API — 0 kr</div>
+          <div class="formula-label">Steg 1 — Henter data (gratis)</div>
+          <div class="formula-line" style="font-family: inherit; font-size: 16px;">Den sjekker prisene på Bitcoin, Ethereum og Solana, leser siste nyheter fra CoinDesk, og henter en "frykt-og-grådighet"-indeks for markedet. Alt dette er gratis.</div>
+        </div>
+        <div class="formula-box">
+          <div class="formula-label">Steg 2 — AI analyserer (koster litt)</div>
+          <div class="formula-line" style="font-family: inherit; font-size: 16px;">Dataene sendes til OpenAI som lager et sammendrag med anbefaling. OpenAI tar betalt per ord de behandler — og det er veldig billig.</div>
         </div>
       </div>
-      <div>
-        <div class="formula-box" style="margin-bottom: 16px;">
-          <div class="formula-label">Pris per kjøring (GPT-4o-mini)</div>
-          <div class="formula-line">Input:  2000 × $0.00015/1000 = $0.0003<br>Output:  500 × $0.0006/1000  = $0.0003<br>─────────────────────────────<br>Total:  $0.0006 per kjøring</div>
-        </div>
+      <div style="display: flex; flex-direction: column; gap: 16px;">
         <div class="formula-box">
-          <div class="formula-label">Per måned (30 kjøringer)</div>
-          <div class="formula-line">30 × $0.0006 = $0.018 ≈ 0.2 kr</div>
-          <div class="formula-result">Avrundet til ~1 kr med god buffer</div>
+          <div class="formula-label">Steg 3 — Sender til Slack (gratis)</div>
+          <div class="formula-line" style="font-family: inherit; font-size: 16px;">Ferdig sammendrag sendes til #crypto-market på Slack. Slack er gratis å sende meldinger til.</div>
+        </div>
+        <div class="formula-box" style="border: 1px solid #f97316;">
+          <div class="formula-label">Hva koster det?</div>
+          <div class="formula-line" style="font-family: inherit; font-size: 16px;">OpenAI tar ca. <strong style="color: #f97316;">0.006 kr per morgen</strong>. Det er som å sende én SMS — men billigere. Ganger du det med 30 dager er det <strong style="color: #10b981;">under 20 øre</strong>. Vi sier ~1 kr for å ha litt slingringsmonn.</div>
         </div>
       </div>
     </div>
