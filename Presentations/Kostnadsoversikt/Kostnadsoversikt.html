@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hva koster det å drifte fire AI-systemer?</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; width: 100%; overflow: hidden; background: #0f172a; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", sans-serif; color: #0f172a; }
+  #stage { position: fixed; inset: 0; }
+  .slide { position: absolute; inset: 0; display: none; flex-direction: column; padding: 80px 100px; background: #fafaf9; overflow: hidden; visibility: hidden; pointer-events: none; }
+  .slide.active { display: flex; visibility: visible; pointer-events: auto; animation: fadeIn .4s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  .slide.dark { background: #0f172a; color: #fafaf9; }
+  .slide.accent { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: #fafaf9; }
+  .slide-num { position: absolute; bottom: 30px; right: 40px; font-size: 12px; color: #94a3b8; font-weight: 500; letter-spacing: 1px; }
+  .slide-label { position: absolute; top: 40px; left: 100px; font-size: 12px; color: #94a3b8; letter-spacing: 3px; text-transform: uppercase; font-weight: 600; }
+  .slide.dark .slide-label, .slide.accent .slide-label { color: #f97316; }
+  .slide.dark .slide-num, .slide.accent .slide-num { color: #475569; }
+  h1.title { font-size: 68px; font-weight: 800; line-height: 1; letter-spacing: -2px; margin-bottom: 24px; }
+  h1.title .accent { color: #f97316; }
+  h2 { font-size: 52px; font-weight: 700; line-height: 1.1; letter-spacing: -1px; margin-bottom: 32px; }
+  h2 .accent { color: #f97316; }
+  .subtitle { font-size: 20px; color: #64748b; margin-bottom: 40px; max-width: 800px; line-height: 1.5; }
+  .slide.accent .subtitle { color: #cbd5e1; }
+  .lead { font-size: 20px; line-height: 1.7; color: #334155; }
+  .signature { position: absolute; bottom: 30px; left: 100px; font-size: 13px; color: #94a3b8; }
+  .tag { display: inline-block; background: #f97316; color: white; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 4px 12px; border-radius: 4px; margin-bottom: 20px; }
+  .cost-card { background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 28px 32px; display: flex; justify-content: space-between; align-items: center; }
+  .cost-label { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #94a3b8; margin-bottom: 8px; }
+  .cost-name { font-size: 18px; font-weight: 700; color: #0f172a; }
+  .cost-desc { font-size: 13px; color: #64748b; margin-top: 4px; }
+  .cost-price { font-size: 32px; font-weight: 800; }
+  .green { color: #10b981; }
+  .orange { color: #f97316; }
+  .formula-box { background: #1e293b; border-radius: 12px; padding: 20px 28px; margin-bottom: 16px; }
+  .formula-label { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #f97316; margin-bottom: 10px; }
+  .formula-line { font-size: 14px; color: #cbd5e1; line-height: 1.8; font-family: "SF Mono", "Fira Code", monospace; }
+  .formula-result { font-size: 16px; font-weight: 700; color: #10b981; margin-top: 8px; }
+</style>
+</head>
+<body>
+<div id="stage">
+
+  <!-- SLIDE 1 -->
+  <div class="slide active accent">
+    <div class="slide-label">GK Automation · Mai 2026</div>
+    <div style="margin-top: auto; margin-bottom: auto;">
+      <div class="tag">Kostnadsoversikt</div>
+      <h1 class="title">Fire AI-systemer.<br><span class="accent">~5 kr</span> i måneden.</h1>
+      <p class="subtitle">En gjennomgang av hva det faktisk koster å drifte fire live AI-systemer — API-kall, modeller og regnestykket bak tallene.</p>
+    </div>
+    <div class="signature">Lucas Gardner · Stavanger · gardner.ai.automation@gmail.com</div>
+    <div class="slide-num">01</div>
+  </div>
+
+  <!-- SLIDE 2 -->
+  <div class="slide">
+    <div class="slide-label">Oversikt</div>
+    <h2>Alle fire systemer,<br>kostnad for kostnad.</h2>
+    <div style="display: flex; flex-direction: column; gap: 16px; margin-top: 10px;">
+      <div class="cost-card">
+        <div><div class="cost-label">01 — Contact Form</div><div class="cost-name">n8n + Gmail</div><div class="cost-desc">Ingen betalte API-er</div></div>
+        <div class="cost-price green">0 kr</div>
+      </div>
+      <div class="cost-card">
+        <div><div class="cost-label">02 — AI Email Responder</div><div class="cost-name">OpenAI GPT-4o-mini + Gmail + Slack</div><div class="cost-desc">~30 e-poster per måned</div></div>
+        <div class="cost-price orange">~5 kr</div>
+      </div>
+      <div class="cost-card">
+        <div><div class="cost-label">03 — Filesystem MCP</div><div class="cost-name">Claude Desktop (lokalt)</div><div class="cost-desc">Kjører på Mac — ingen sky, ingen ekstra kostnad</div></div>
+        <div class="cost-price green">0 kr</div>
+      </div>
+      <div class="cost-card">
+        <div><div class="cost-label">04 — Crypto Morgenbrief</div><div class="cost-name">GPT-4o-mini + 3 gratis datakilder</div><div class="cost-desc">30 kjøringer/mnd à $0.0006</div></div>
+        <div class="cost-price green">~1 kr</div>
+      </div>
+    </div>
+    <div class="slide-num">02</div>
+  </div>
+
+  <!-- SLIDE 3 -->
+  <div class="slide dark">
+    <div class="slide-label">Regnestykket — AI Email Responder</div>
+    <h2>~5 kr/mnd.<br><span class="accent">Slik kom vi dit.</span></h2>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 20px;">
+      <div>
+        <p class="lead" style="color: #cbd5e1; margin-bottom: 24px;">AI Email Responder leser innkommende e-poster og svarer automatisk med OpenAI GPT-4o-mini.</p>
+        <div class="formula-box">
+          <div class="formula-label">Forutsetninger</div>
+          <div class="formula-line">• ~30 e-poster per måned<br>• ~300 tokens inn per e-post<br>• ~200 tokens ut per svar<br>• Modell: GPT-4o-mini</div>
+        </div>
+      </div>
+      <div>
+        <div class="formula-box" style="margin-bottom: 16px;">
+          <div class="formula-label">Pris per e-post</div>
+          <div class="formula-line">Input:  300 × $0.00015/1000 = $0.000045<br>Output: 200 × $0.0006/1000  = $0.00012<br>─────────────────────────────<br>Total:  ~$0.000165 per e-post</div>
+        </div>
+        <div class="formula-box">
+          <div class="formula-label">Per måned (30 e-poster)</div>
+          <div class="formula-line">30 × $0.000165 = $0.005 ≈ 0.05 kr</div>
+          <div class="formula-result">Avrundet til ~5 kr med god buffer</div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-num">03</div>
+  </div>
+
+  <!-- SLIDE 4 -->
+  <div class="slide dark">
+    <div class="slide-label">Regnestykket — Crypto Morgenbrief</div>
+    <h2>~1 kr/mnd.<br><span class="accent">Nesten gratis.</span></h2>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 20px;">
+      <div>
+        <p class="lead" style="color: #cbd5e1; margin-bottom: 24px;">Agenten henter data fra tre helt gratis kilder og sender alt til GPT-4o-mini for analyse.</p>
+        <div class="formula-box">
+          <div class="formula-label">Gratis datakilder</div>
+          <div class="formula-line">• CoinGecko API — 0 kr<br>• CoinDesk RSS — 0 kr<br>• Fear &amp; Greed Index API — 0 kr</div>
+        </div>
+      </div>
+      <div>
+        <div class="formula-box" style="margin-bottom: 16px;">
+          <div class="formula-label">Pris per kjøring (GPT-4o-mini)</div>
+          <div class="formula-line">Input:  2000 × $0.00015/1000 = $0.0003<br>Output:  500 × $0.0006/1000  = $0.0003<br>─────────────────────────────<br>Total:  $0.0006 per kjøring</div>
+        </div>
+        <div class="formula-box">
+          <div class="formula-label">Per måned (30 kjøringer)</div>
+          <div class="formula-line">30 × $0.0006 = $0.018 ≈ 0.2 kr</div>
+          <div class="formula-result">Avrundet til ~1 kr med god buffer</div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-num">04</div>
+  </div>
+
+  <!-- SLIDE 5 -->
+  <div class="slide accent">
+    <div class="slide-label">Konklusjon</div>
+    <h2>Totalt per måned.<br>Alle fire systemer.</h2>
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 30px; margin-top: 50px;">
+      <div><div style="font-size: 56px; font-weight: 800; color: #10b981; line-height: 1;">0 kr</div><div style="font-size: 14px; color: #cbd5e1; margin-top: 8px;">Contact Form</div></div>
+      <div><div style="font-size: 56px; font-weight: 800; color: #f97316; line-height: 1;">~5 kr</div><div style="font-size: 14px; color: #cbd5e1; margin-top: 8px;">AI Email Responder</div></div>
+      <div><div style="font-size: 56px; font-weight: 800; color: #10b981; line-height: 1;">0 kr</div><div style="font-size: 14px; color: #cbd5e1; margin-top: 8px;">Filesystem MCP</div></div>
+      <div><div style="font-size: 56px; font-weight: 800; color: #10b981; line-height: 1;">~1 kr</div><div style="font-size: 14px; color: #cbd5e1; margin-top: 8px;">Crypto Morgenbrief</div></div>
+    </div>
+    <div style="margin-top: 60px; padding: 28px 40px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; display: flex; justify-content: space-between; align-items: center;">
+      <div>
+        <div style="font-size: 14px; color: #94a3b8; margin-bottom: 4px;">TOTALT PER MÅNED — ALLE FIRE SYSTEMER</div>
+        <div style="font-size: 14px; color: #475569;">n8n-planen ($24/mnd) er ikke inkludert — fast kostnad uansett hva du bygger.</div>
+      </div>
+      <div style="font-size: 64px; font-weight: 800; color: #f97316;">~5 kr</div>
+    </div>
+    <div class="slide-num">05</div>
+  </div>
+
+</div>
+
+<div id="controls" style="position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 12px; background: rgba(15,23,42,0.9); backdrop-filter: blur(12px); padding: 10px 20px; border-radius: 50px; border: 1px solid rgba(255,255,255,0.1);">
+  <button onclick="prev()" style="background: none; border: none; color: #94a3b8; font-size: 14px; cursor: pointer; padding: 4px 8px;">← Forrige</button>
+  <span id="counter" style="color: #64748b; font-size: 13px; min-width: 60px; text-align: center;">1 / 5</span>
+  <button onclick="next()" style="background: none; border: none; color: #94a3b8; font-size: 14px; cursor: pointer; padding: 4px 8px;">Neste →</button>
+  <button onclick="toggleFullscreen()" style="background: none; border: none; color: #94a3b8; font-size: 14px; cursor: pointer; padding: 4px 8px; border-left: 1px solid rgba(255,255,255,0.1); margin-left: 4px; padding-left: 16px;">Fullskjerm (F)</button>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('#stage > .slide');
+  const total = slides.length;
+  let current = 0;
+  const counter = document.getElementById('counter');
+  function show(n) { slides[current].classList.remove('active'); current = (n + total) % total; slides[current].classList.add('active'); counter.textContent = `${current + 1} / ${total}`; }
+  function next() { show(current + 1); }
+  function prev() { show(current - 1); }
+  function toggleFullscreen() { if (!document.fullscreenElement) document.documentElement.requestFullscreen(); else document.exitFullscreen(); }
+  document.addEventListener('keydown', e => { if (e.key === 'ArrowRight' || e.key === 'ArrowDown') next(); if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') prev(); if (e.key === 'f' || e.key === 'F') toggleFullscreen(); });
+</script>
+</body>
+</html>
