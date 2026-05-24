@@ -81,25 +81,28 @@
 
   <!-- SLIDE 3 -->
   <div class="slide dark">
-    <div class="slide-label">Regnestykket — AI Email Responder</div>
+    <div class="slide-label">AI Email Responder</div>
     <h2>~5 kr/mnd.<br><span class="accent">Slik kom vi dit.</span></h2>
     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin-top: 20px;">
-      <div>
-        <p class="lead" style="color: #cbd5e1; margin-bottom: 24px;">AI Email Responder leser innkommende e-poster og svarer automatisk med OpenAI GPT-4o-mini.</p>
+      <div style="display: flex; flex-direction: column; gap: 16px;">
+        <p class="lead" style="color: #cbd5e1;">Når noen sender e-post til GK Automation, skjer dette automatisk:</p>
         <div class="formula-box">
-          <div class="formula-label">Forutsetninger</div>
-          <div class="formula-line">• ~30 e-poster per måned<br>• ~300 tokens inn per e-post<br>• ~200 tokens ut per svar<br>• Modell: GPT-4o-mini</div>
+          <div class="formula-label">Steg 1 — Leser e-posten (gratis)</div>
+          <div class="formula-line" style="font-family: inherit; font-size: 16px;">Gmail mottar e-posten og sender den videre til n8n. Ingen kostnad.</div>
+        </div>
+        <div class="formula-box">
+          <div class="formula-label">Steg 2 — AI skriver svar (koster litt)</div>
+          <div class="formula-line" style="font-family: inherit; font-size: 16px;">OpenAI leser e-posten og skriver et profesjonelt svar. OpenAI tar betalt per ord de behandler — men det er veldig billig.</div>
         </div>
       </div>
-      <div>
-        <div class="formula-box" style="margin-bottom: 16px;">
-          <div class="formula-label">Pris per e-post</div>
-          <div class="formula-line">Input:  300 × $0.00015/1000 = $0.000045<br>Output: 200 × $0.0006/1000  = $0.00012<br>─────────────────────────────<br>Total:  ~$0.000165 per e-post</div>
-        </div>
+      <div style="display: flex; flex-direction: column; gap: 16px;">
         <div class="formula-box">
-          <div class="formula-label">Per måned (30 e-poster)</div>
-          <div class="formula-line">30 × $0.000165 = $0.005 ≈ 0.05 kr</div>
-          <div class="formula-result">Avrundet til ~5 kr med god buffer</div>
+          <div class="formula-label">Steg 3 — Sender svar + Slack-varsel (gratis)</div>
+          <div class="formula-line" style="font-family: inherit; font-size: 16px;">Svaret sendes tilbake til avsender via Gmail, og jeg får et varsel i Slack. Begge er gratis.</div>
+        </div>
+        <div class="formula-box" style="border: 1px solid #f97316;">
+          <div class="formula-label">Hva koster det?</div>
+          <div class="formula-line" style="font-family: inherit; font-size: 16px;">OpenAI koster ca. <strong style="color: #f97316;">0.002 kr per e-post</strong>. Med 30 e-poster i måneden er det under <strong style="color: #10b981;">7 øre totalt</strong>. Vi sier ~5 kr for å ha god slingringsmonn.</div>
         </div>
       </div>
     </div>
