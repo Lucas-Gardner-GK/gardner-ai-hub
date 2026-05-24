@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crypto Morgenbrief — Slik bygget jeg det</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; width: 100%; overflow: hidden; background: #0f172a; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", sans-serif; color: #0f172a; }
+  #stage { position: fixed; inset: 0; }
+  .slide { position: absolute; inset: 0; display: none; flex-direction: column; padding: 80px 100px; background: #fafaf9; overflow: hidden; visibility: hidden; pointer-events: none; }
+  .slide.active { display: flex; visibility: visible; pointer-events: auto; animation: fadeIn .4s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  .slide.dark { background: #0f172a; color: #fafaf9; }
+  .slide.accent { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); color: #fafaf9; }
+  .slide-num { position: absolute; bottom: 30px; right: 40px; font-size: 12px; color: #94a3b8; font-weight: 500; letter-spacing: 1px; }
+  .slide-label { position: absolute; top: 40px; left: 100px; font-size: 12px; color: #94a3b8; letter-spacing: 3px; text-transform: uppercase; font-weight: 600; }
+  .slide.dark .slide-label, .slide.accent .slide-label { color: #f97316; }
+  .slide.dark .slide-num, .slide.accent .slide-num { color: #475569; }
+  h1.title { font-size: 72px; font-weight: 800; line-height: 1; letter-spacing: -2px; margin-bottom: 24px; }
+  h1.title .accent { color: #f97316; }
+  h2 { font-size: 52px; font-weight: 700; line-height: 1.1; letter-spacing: -1px; margin-bottom: 32px; }
+  h2 .accent { color: #f97316; }
+  .subtitle { font-size: 22px; color: #64748b; margin-bottom: 40px; max-width: 800px; line-height: 1.4; }
+  .slide.dark .subtitle, .slide.accent .subtitle { color: #cbd5e1; }
+  .lead { font-size: 20px; line-height: 1.7; color: #334155; max-width: 900px; }
+  .slide.dark .lead, .slide.accent .lead { color: #cbd5e1; }
+  .signature { position: absolute; bottom: 30px; left: 100px; font-size: 13px; color: #94a3b8; }
+  .stat-num { font-size: 64px; font-weight: 800; color: #f97316; line-height: 1; }
+  .stat-label { font-size: 15px; color: #64748b; margin-top: 8px; line-height: 1.4; }
+  .slide.accent .stat-label { color: #cbd5e1; }
+  .card { background: white; border: 1px solid #e2e8f0; border-radius: 16px; padding: 28px; }
+  .card h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; color: #0f172a; }
+  .card p { font-size: 14px; color: #64748b; line-height: 1.6; }
+  .tag { display: inline-block; background: #f97316; color: white; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 4px 12px; border-radius: 4px; margin-bottom: 20px; }
+  .screenshot { border-radius: 12px; box-shadow: 0 20px 60px rgba(0,0,0,0.15); border: 1px solid #e2e8f0; width: 100%; object-fit: contain; }
+  .placeholder { display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 12px; background: #f1f5f9; border-radius: 12px; border: 2px dashed #cbd5e1; }
+</style>
+</head>
+<body>
+<div id="stage">
+
+  <!-- SLIDE 1 -->
+  <div class="slide active accent">
+    <div class="slide-label">Lucas Gardner · Mai 2026</div>
+    <div style="margin-top: auto; margin-bottom: auto;">
+      <div class="tag">Nytt system — live</div>
+      <h1 class="title">Crypto Morgenbrief.<br><span class="accent">Bygget fra bunnen.</span></h1>
+      <p class="subtitle">En autonom AI-agent som henter markedsdata, analyserer nyheter og leverer et personlig crypto-sammendrag til Slack kl. 07:00 — hver dag, uten at jeg løfter en finger.</p>
+    </div>
+    <div class="signature">Lucas Gardner · Stavanger · gardner.ai.automation@gmail.com</div>
+    <div class="slide-num">01</div>
+  </div>
+
+  <!-- SLIDE 2 -->
+  <div class="slide">
+    <div class="slide-label">Ideen</div>
+    <h2>Hva er det, og<br>hvorfor lagde jeg det?</h2>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 10px;">
+      <div style="display: flex; flex-direction: column; gap: 20px;">
+        <p class="lead">Hver morgen bruker folk i crypto-bransjen tid på å sjekke priser, lese nyheter og danne seg et bilde av markedet.</p>
+        <p class="lead">Jeg ville automatisere akkurat det — en agent som gjør jobben mens du sover, og leverer en ferdig analyse klar til frokost.</p>
+        <p class="lead" style="color: #f97316; font-weight: 600;">Resultat: fullstendig markedsanalyse med AI-anbefaling — automatisk, hver dag.</p>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 16px;">
+        <div class="card">
+          <h3>🪙 Henter live data</h3>
+          <p>Priser på BTC, ETH og SOL fra CoinGecko, Fear & Greed Index og siste nyheter fra CoinDesk — alt samlet automatisk.</p>
+        </div>
+        <div class="card">
+          <h3>🤖 AI-analyse</h3>
+          <p>GPT-4o-mini analyserer dataene og lager et strukturert sammendrag med konkret kjøp/hold-anbefaling.</p>
+        </div>
+        <div class="card">
+          <h3>📲 Levering kl. 07:00</h3>
+          <p>Sendes automatisk til Slack-kanalen #crypto-market hver morgen — klar til du åpner telefonen.</p>
+        </div>
+      </div>
+    </div>
+    <div class="slide-num">02</div>
+  </div>
+
+  <!-- SLIDE 3 -->
+  <div class="slide dark">
+    <div class="slide-label">Teknisk oppsett</div>
+    <h2>7 noder.<br><span class="accent">Én autonom flyt.</span></h2>
+    <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; margin-top: 40px; align-items: center;">
+      <div style="text-align: center;"><div style="background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 18px 8px;"><div style="font-size: 26px; margin-bottom: 6px;">⏰</div><div style="font-size: 11px; font-weight: 700; color: #f97316;">Kl. 07:00</div><div style="font-size: 10px; color: #64748b; margin-top: 3px;">Trigger</div></div></div>
+      <div style="text-align: center; color: #f97316; font-size: 18px;">→</div>
+      <div style="text-align: center;"><div style="background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 18px 8px;"><div style="font-size: 26px; margin-bottom: 6px;">🌐</div><div style="font-size: 11px; font-weight: 700; color: #f97316;">3 API-kall</div><div style="font-size: 10px; color: #64748b; margin-top: 3px;">Parallelt</div></div></div>
+      <div style="text-align: center; color: #f97316; font-size: 18px;">→</div>
+      <div style="text-align: center;"><div style="background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 18px 8px;"><div style="font-size: 26px; margin-bottom: 6px;">⚡</div><div style="font-size: 11px; font-weight: 700; color: #f97316;">Merge + Code</div><div style="font-size: 10px; color: #64748b; margin-top: 3px;">Slår sammen data</div></div></div>
+      <div style="text-align: center; color: #f97316; font-size: 18px;">→</div>
+      <div style="text-align: center;"><div style="background: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 18px 8px;"><div style="font-size: 26px; margin-bottom: 6px;">🤖</div><div style="font-size: 11px; font-weight: 700; color: #f97316;">GPT → Slack</div><div style="font-size: 10px; color: #64748b; margin-top: 3px;">Analyse + levering</div></div></div>
+    </div>
+    <div style="margin-top: 48px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px;">
+      <div style="background: #1e293b; border-radius: 10px; padding: 16px;"><div style="font-size: 12px; color: #f97316; font-weight: 700; margin-bottom: 6px;">COINGECKO</div><div style="font-size: 13px; color: #94a3b8;">Live priser BTC · ETH · SOL med 24t endring</div></div>
+      <div style="background: #1e293b; border-radius: 10px; padding: 16px;"><div style="font-size: 12px; color: #f97316; font-weight: 700; margin-bottom: 6px;">COINDESK RSS</div><div style="font-size: 13px; color: #94a3b8;">Siste nyheter fra verdens ledende crypto-medium</div></div>
+      <div style="background: #1e293b; border-radius: 10px; padding: 16px;"><div style="font-size: 12px; color: #f97316; font-weight: 700; margin-bottom: 6px;">FEAR & GREED INDEX</div><div style="font-size: 13px; color: #94a3b8;">Markedsstemning i ett tall (0 = ekstrem frykt, 100 = grådighet)</div></div>
+    </div>
+    <div class="slide-num">03</div>
+  </div>
+
+  <!-- SLIDE 4: WORKFLOW SCREENSHOT -->
+  <div class="slide">
+    <div class="slide-label">n8n workflow</div>
+    <h2>Slik ser flyten ut<br>i <span class="accent">n8n.</span></h2>
+    <div style="margin-top: 24px; flex: 1; display: flex; align-items: center; justify-content: center;">
+      <img src="../../assets/crypto_workflow.png" alt="n8n workflow" class="screenshot" style="max-height: 400px;" onerror="this.style.display='none'; document.getElementById('wf-placeholder').style.display='flex'">
+      <div id="wf-placeholder" style="display: none; width: 100%; height: 400px;" class="placeholder">
+        <div style="font-size: 40px;">🔄</div>
+        <div style="font-size: 15px; color: #94a3b8; font-weight: 600;">Crypto Morgenbrief — n8n workflow</div>
+        <div style="font-size: 13px; color: #cbd5e1;">7 noder · Kl. 07:00 · Published</div>
+      </div>
+    </div>
+    <div class="slide-num">04</div>
+  </div>
+
+  <!-- SLIDE 5: SLACK OUTPUT -->
+  <div class="slide">
+    <div class="slide-label">Resultatet</div>
+    <h2>Hva som lander<br>i <span class="accent">Slack.</span></h2>
+    <div style="margin-top: 20px; display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: start;">
+      <div>
+        <p style="font-size: 17px; color: #334155; line-height: 1.7; margin-bottom: 24px;">Kl. 07:00 popper dette opp i <strong>#crypto-market</strong> — ingen input fra meg:</p>
+        <div style="display: flex; flex-direction: column; gap: 14px;">
+          <div style="display: flex; align-items: flex-start; gap: 12px;"><div style="width: 8px; height: 8px; background: #f97316; border-radius: 50%; flex-shrink: 0; margin-top: 6px;"></div><span style="font-size: 15px; color: #334155;"><strong>Markedsoversikt</strong> — eksakte priser og prosentendringer med kontekst</span></div>
+          <div style="display: flex; align-items: flex-start; gap: 12px;"><div style="width: 8px; height: 8px; background: #f97316; border-radius: 50%; flex-shrink: 0; margin-top: 6px;"></div><span style="font-size: 15px; color: #334155;"><strong>Fear & Greed Index</strong> — hva tallet betyr for markedet akkurat nå</span></div>
+          <div style="display: flex; align-items: flex-start; gap: 12px;"><div style="width: 8px; height: 8px; background: #f97316; border-radius: 50%; flex-shrink: 0; margin-top: 6px;"></div><span style="font-size: 15px; color: #334155;"><strong>Viktigste nyheter</strong> — hvem, hva og hva det faktisk betyr for markedet</span></div>
+          <div style="display: flex; align-items: flex-start; gap: 12px;"><div style="width: 8px; height: 8px; background: #f97316; border-radius: 50%; flex-shrink: 0; margin-top: 6px;"></div><span style="font-size: 15px; color: #334155;"><strong>AI-analyse og anbefaling</strong> — kjøpe, holde eller være forsiktig i dag?</span></div>
+          <div style="display: flex; align-items: flex-start; gap: 12px;"><div style="width: 8px; height: 8px; background: #f97316; border-radius: 50%; flex-shrink: 0; margin-top: 6px;"></div><span style="font-size: 15px; color: #334155;"><strong>Kort konklusjon</strong> — hva investorer bør ha i bakhodet i dag</span></div>
+        </div>
+      </div>
+      <div style="display: flex; align-items: flex-start;">
+        <img src="../../assets/crypto_slack.png" alt="Slack output" class="screenshot" style="max-height: 500px;" onerror="this.style.display='none'; document.getElementById('slack-placeholder').style.display='flex'">
+        <div id="slack-placeholder" style="display: none; width: 100%; height: 500px;" class="placeholder"><div style="font-size: 40px;">💬</div><div style="font-size: 14px; color: #94a3b8;">#crypto-market</div></div>
+      </div>
+    </div>
+    <div class="slide-num">05</div>
+  </div>
+
+  <!-- SLIDE 6: STATS -->
+  <div class="slide accent">
+    <div class="slide-label">Nøkkeltall</div>
+    <h2>Live. Autonomt.<br>Hver morgen.</h2>
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 40px; margin-top: 60px;">
+      <div><div class="stat-num">3</div><div class="stat-label">Datakilder slått<br>sammen automatisk</div></div>
+      <div><div class="stat-num">07:00</div><div class="stat-label">Leveres til Slack<br>hver morgen</div></div>
+      <div><div class="stat-num">~3kr</div><div class="stat-label">Månedlig kostnad<br>for GPT-analyse</div></div>
+      <div><div class="stat-num">0</div><div class="stat-label">Minutter jeg bruker<br>på det per dag</div></div>
+    </div>
+    <div class="slide-num">06</div>
+  </div>
+
+  <!-- SLIDE 7: SKALERBARHET -->
+  <div class="slide">
+    <div class="slide-label">Hva det kan bli</div>
+    <h2>Dette er<br><span class="accent">versjon 1.0.</span></h2>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 20px;">
+      <div>
+        <p class="lead">Det jeg har bygget er grunnmuren. Selve agentstrukturen kan enkelt utvides — og er direkte relevant for bedrifter som Bitcoin Norge:</p>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 16px;">
+        <div class="card"><h3>📊 Porteføljetracking</h3><p>Koble til faktiske holdings og gi personalisert analyse basert på det man eier.</p></div>
+        <div class="card"><h3>⚡ Prisalarmer i sanntid</h3><p>Automatisk varsel til Slack når BTC, ETH eller SOL beveger seg mer enn X% på én time.</p></div>
+        <div class="card"><h3>🏢 Intern morgenbrief for Bitcoin Norge</h3><p>Skreddersydd daglig analyse for ledergruppen — med nyheter og regulatorisk info relevant for norsk crypto-marked.</p></div>
+      </div>
+    </div>
+    <div class="slide-num">07</div>
+  </div>
+
+</div>
+
+<div id="controls" style="position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 12px; background: rgba(15,23,42,0.9); backdrop-filter: blur(12px); padding: 10px 20px; border-radius: 50px; border: 1px solid rgba(255,255,255,0.1);">
+  <button onclick="prev()" style="background: none; border: none; color: #94a3b8; font-size: 14px; cursor: pointer; padding: 4px 8px;">← Forrige</button>
+  <span id="counter" style="color: #64748b; font-size: 13px; min-width: 60px; text-align: center;">1 / 7</span>
+  <button onclick="next()" style="background: none; border: none; color: #94a3b8; font-size: 14px; cursor: pointer; padding: 4px 8px;">Neste →</button>
+  <button onclick="toggleFullscreen()" style="background: none; border: none; color: #94a3b8; font-size: 14px; cursor: pointer; padding: 4px 8px; border-left: 1px solid rgba(255,255,255,0.1); margin-left: 4px; padding-left: 16px;">Fullskjerm (F)</button>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('#stage > .slide');
+  const total = slides.length;
+  let current = 0;
+  const counter = document.getElementById('counter');
+  function show(n) { slides[current].classList.remove('active'); current = (n + total) % total; slides[current].classList.add('active'); counter.textContent = `${current + 1} / ${total}`; }
+  function next() { show(current + 1); }
+  function prev() { show(current - 1); }
+  function toggleFullscreen() { if (!document.fullscreenElement) document.documentElement.requestFullscreen(); else document.exitFullscreen(); }
+  document.addEventListener('keydown', e => { if (e.key === 'ArrowRight' || e.key === 'ArrowDown') next(); if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') prev(); if (e.key === 'f' || e.key === 'F') toggleFullscreen(); });
+</script>
+</body>
+</html>
