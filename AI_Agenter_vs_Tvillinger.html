@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="nb">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI-agenter vs AI-tvillinger</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0e0e0f;
+    --surface: #161618;
+    --border: #2a2a2e;
+    --agent: #00e5a0;
+    --twin: #7b6ff0;
+    --text: #e8e8e8;
+    --muted: #6b6b75;
+    --accent: #ff5c5c;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Mono', monospace;
+    min-height: 100vh;
+    padding: 60px 24px 120px;
+  }
+
+  .header {
+    text-align: center;
+    margin-bottom: 80px;
+  }
+
+  .header .eyebrow {
+    font-size: 11px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 20px;
+  }
+
+  .header h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(36px, 6vw, 72px);
+    font-weight: 800;
+    line-height: 1.05;
+    margin-bottom: 8px;
+  }
+
+  .header h1 .agent-word { color: var(--agent); }
+  .header h1 .twin-word { color: var(--twin); }
+
+  .header .sub {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 16px;
+  }
+
+  .max {
+    max-width: 960px;
+    margin: 0 auto;
+  }
+
+  .definitions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    margin-bottom: 60px;
+    border: 1px solid var(--border);
+  }
+
+  @media (max-width: 600px) {
+    .definitions { grid-template-columns: 1fr; }
+  }
+
+  .def-card {
+    background: var(--surface);
+    padding: 40px 36px;
+  }
+
+  .def-card:first-child { border-right: 1px solid var(--border); }
+
+  .def-label {
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .def-label.agent { color: var(--agent); }
+  .def-label.twin { color: var(--twin); }
+
+  .def-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 26px;
+    font-weight: 700;
+    margin-bottom: 20px;
+  }
+
+  .def-body {
+    font-size: 13px;
+    line-height: 1.8;
+    color: #b0b0ba;
+  }
+
+  .def-analogy {
+    margin-top: 20px;
+    padding: 16px 20px;
+    border-left: 3px solid;
+    font-size: 12px;
+    color: var(--muted);
+    font-style: italic;
+    line-height: 1.7;
+  }
+
+  .def-card:first-child .def-analogy { border-color: var(--agent); }
+  .def-card:last-child .def-analogy { border-color: var(--twin); }
+
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 24px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .compare-block {
+    margin-bottom: 60px;
+  }
+
+  .compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  .compare-table thead tr {
+    background: var(--surface);
+  }
+
+  .compare-table th {
+    padding: 16px 20px;
+    text-align: left;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-weight: 500;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .compare-table th:nth-child(2) { color: var(--agent); }
+  .compare-table th:nth-child(3) { color: var(--twin); }
+
+  .compare-table td {
+    padding: 18px 20px;
+    border-bottom: 1px solid var(--border);
+    line-height: 1.6;
+    vertical-align: top;
+    color: #b0b0ba;
+  }
+
+  .compare-table td:first-child {
+    color: var(--text);
+    font-weight: 500;
+    width: 22%;
+    white-space: nowrap;
+  }
+
+  .compare-table tr:hover td {
+    background: rgba(255,255,255,0.02);
+  }
+
+  .usecases {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    margin-bottom: 60px;
+  }
+
+  @media (max-width: 600px) {
+    .usecases { grid-template-columns: 1fr; }
+  }
+
+  .usecase-col {
+    background: var(--surface);
+    padding: 36px 32px;
+    border: 1px solid var(--border);
+  }
+
+  .usecase-col h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 24px;
+  }
+
+  .usecase-col.agent h3 { color: var(--agent); }
+  .usecase-col.twin h3 { color: var(--twin); }
+
+  .usecase-item {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 18px;
+    font-size: 13px;
+    line-height: 1.6;
+    color: #b0b0ba;
+  }
+
+  .usecase-item .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 7px;
+  }
+
+  .usecase-col.agent .dot { background: var(--agent); }
+  .usecase-col.twin .dot { background: var(--twin); }
+
+  .similarities {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 40px 36px;
+    margin-bottom: 60px;
+  }
+
+  .sim-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 24px;
+    margin-top: 8px;
+  }
+
+  .sim-item {
+    padding: 20px 24px;
+    border: 1px solid var(--border);
+    font-size: 13px;
+    line-height: 1.7;
+    color: #b0b0ba;
+  }
+
+  .sim-item strong {
+    display: block;
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    margin-bottom: 8px;
+  }
+
+  .verdict {
+    border: 1px solid var(--border);
+    padding: 40px 36px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .verdict::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--agent), var(--twin));
+  }
+
+  .verdict h3 {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    margin-bottom: 20px;
+  }
+
+  .verdict p {
+    font-size: 14px;
+    line-height: 1.9;
+    color: #b0b0ba;
+    max-width: 700px;
+  }
+
+  .verdict p + p {
+    margin-top: 14px;
+  }
+
+  .verdict strong {
+    color: var(--text);
+  }
+
+  .tag {
+    display: inline-block;
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    margin-top: 20px;
+    margin-right: 8px;
+  }
+
+  .tag.agent { border: 1px solid var(--agent); color: var(--agent); }
+  .tag.twin { border: 1px solid var(--twin); color: var(--twin); }
+
+  @media (max-width: 600px) {
+    .def-card:first-child { border-right: none; border-bottom: 1px solid var(--border); }
+    .compare-table td:first-child { white-space: normal; }
+  }
+</style>
+</head>
+<body>
+
+<div class="max">
+
+  <div class="header">
+    <p class="eyebrow">Konseptguide</p>
+    <h1>
+      <span class="agent-word">AI-agenter</span><br>
+      vs<br>
+      <span class="twin-word">AI-tvillinger</span>
+    </h1>
+    <p class="sub">Hva er de, hva er de gode på, og når bruker du hva?</p>
+  </div>
+
+  <div class="definitions">
+    <div class="def-card">
+      <div class="def-label agent">Konsept 01</div>
+      <div class="def-title">AI-agent</div>
+      <div class="def-body">
+        En AI-agent er et system bygget for å utføre oppgaver autonomt. Den bruker en språkmodell som "hjerne", kombinert med verktøy, minne og planlegging. Agenten kan handle, ta beslutninger og løse problemer i den virkelige verden — ikke bare svare på spørsmål.
+      </div>
+      <div class="def-analogy">
+        Tenk på det som å ansette en usynlig medarbeider som kan lese e-post, svare kunder, hente data, lage sammendrag og sende Slack-meldinger — alt uten at du trykker på en knapp.
+      </div>
+    </div>
+    <div class="def-card">
+      <div class="def-label twin">Konsept 02</div>
+      <div class="def-title">AI-tvilling</div>
+      <div class="def-body">
+        En AI-tvilling er en digital kopi av noe fra den virkelige verden — en person, en prosess, en fabrikk eller et system. Den er trent til å oppføre seg og reagere slik originalen ville gjort, og brukes til simulering, testing og forutsigelse.
+      </div>
+      <div class="def-analogy">
+        Tenk på det som en dukke av en fabrikk, en prosess eller til og med deg selv — du kan stille den spørsmål, teste scenarioer og forutsi hva som skjer uten å berøre virkeligheten.
+      </div>
+    </div>
+  </div>
+
+  <div class="compare-block">
+    <div class="section-title">Direkte sammenligning</div>
+    <table class="compare-table">
+      <thead>
+        <tr>
+          <th>Tema</th>
+          <th>AI-agent</th>
+          <th>AI-tvilling</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Formål</td>
+          <td>Utføre oppgaver og automatisere arbeid</td>
+          <td>Simulere og forstå et system eller en person</td>
+        </tr>
+        <tr>
+          <td>Bygget på</td>
+          <td>LLM + verktøy + minne + planlegging</td>
+          <td>Data fra det som kopieres + LLM eller ML-modell</td>
+        </tr>
+        <tr>
+          <td>Handling</td>
+          <td>Ja — agenten gjør ting i verden</td>
+          <td>Nei — tvillingen simulerer, handler ikke</td>
+        </tr>
+        <tr>
+          <td>Kompleksitet</td>
+          <td>Middels — kan bygges raskt med riktige verktøy</td>
+          <td>Høy — krever mye data og domenekunnskap</td>
+        </tr>
+        <tr>
+          <td>Kostnad</td>
+          <td>Lav til middels å bygge og drifte</td>
+          <td>Høy — spesielt for person-tvillinger</td>
+        </tr>
+        <tr>
+          <td>Tidshorisont</td>
+          <td>Nytteverdi fra dag én</td>
+          <td>Ofte måneder med oppsett og trening</td>
+        </tr>
+        <tr>
+          <td>Bransje</td>
+          <td>Alle bransjer — særlig SMB og automatisering</td>
+          <td>Industri, helse, store organisasjoner</td>
+        </tr>
+        <tr>
+          <td>Eksempel</td>
+          <td>AI som svarer på kundehenvendelser 24/7</td>
+          <td>Digital kopi av en leder som kan svare som ham</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section-title">Typiske bruksområder</div>
+  <div class="usecases">
+    <div class="usecase-col agent">
+      <h3>AI-agenter er best til...</h3>
+      <div class="usecase-item"><div class="dot"></div><span>Automatisere repeterende oppgaver som e-post, bookinger og rapportering</span></div>
+      <div class="usecase-item"><div class="dot"></div><span>Kundesupport døgnet rundt uten ekstra ansatte</span></div>
+      <div class="usecase-item"><div class="dot"></div><span>Hente, analysere og sammenfatte data fra flere kilder</span></div>
+      <div class="usecase-item"><div class="dot"></div><span>Triggerbasert automatisering — noe skjer, agenten reagerer</span></div>
+      <div class="usecase-item"><div class="dot"></div><span>Integrere systemer som ikke snakker med hverandre</span></div>
+      <div class="usecase-item"><div class="dot"></div><span>Morgenbriefer, markedsovervåking og interne varsler</span></div>
+    </div>
+    <div class="usecase-col twin">
+      <h3>AI-tvillinger er best til...</h3>
+      <div class="usecase-item"><div class="dot"></div><span>Simulere hva som skjer i en prosess før du endrer den</span></div>
+      <div class="usecase-item"><div class="dot"></div><span>Teste farlige eller kostbare scenarioer digitalt</span></div>
+      <div class="usecase-item"><div class="dot"></div><span>Bevare kunnskap fra erfarne ansatte som slutter</span></div>
+      <div class="usecase-item"><div class="dot"></div><span>Opplæring — svar som en ekspert ville svart</span></div>
+      <div class="usecase-item"><div class="dot"></div><span>Forutsi feil i maskiner eller systemer (predictive maintenance)</span></div>
+      <div class="usecase-item"><div class="dot"></div><span>Stor industriell eller organisatorisk modellering</span></div>
+    </div>
+  </div>
+
+  <div class="similarities">
+    <div class="section-title">Hva de har til felles</div>
+    <div class="sim-grid">
+      <div class="sim-item">
+        <strong>Begge bruker AI</strong>
+        Begge er bygget på maskinlæring eller store språkmodeller som fundament.
+      </div>
+      <div class="sim-item">
+        <strong>Begge lærer av data</strong>
+        Ytelsen avhenger av kvaliteten på dataen de er trent på eller får tilgang til.
+      </div>
+      <div class="sim-item">
+        <strong>Begge sparer tid</strong>
+        Målet er å frigjøre menneskelig kapasitet — enten ved å handle eller simulere.
+      </div>
+      <div class="sim-item">
+        <strong>Begge kan kombineres</strong>
+        En agent kan styre en tvilling. En tvilling kan informere en agent. De er ikke motsetninger.
+      </div>
+    </div>
+  </div>
+
+  <div class="verdict">
+    <h3>Bunnlinjen</h3>
+    <p>
+      <strong>AI-agenter handler. AI-tvillinger simulerer.</strong> Det er den korteste og mest presise forskjellen.
+    </p>
+    <p>
+      Hvis du vil at noe skal skje automatisk i virkeligheten — en e-post som sendes, en rapport som lages, en kunde som får svar — er det en agent du trenger. Agenter gir verdi fra første dag og kan bygges på uker.
+    </p>
+    <p>
+      Hvis du vil forstå, teste eller forutsi et komplekst system uten å berøre det — eller bevare ekspertisen til en nøkkelperson — er det en tvilling. Men det krever mer tid, mer data og mer investering.
+    </p>
+    <p>
+      For de fleste norske bedrifter i dag er <strong>agenter</strong> det praktiske steget. Tvillinger er fremtiden for de med ressurser til å investere i det.
+    </p>
+    <div>
+      <span class="tag agent">Agenter: gjør det nå</span>
+      <span class="tag twin">Tvillinger: fremtidsinvestering</span>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
